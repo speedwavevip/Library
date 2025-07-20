@@ -1,666 +1,754 @@
-local library = {}
+local Library = {}
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local Mouse = Players.LocalPlayer:GetMouse()
 
--- Sound function
-function play(id)
-    for _, v in next, workspace:GetChildren() do
-        if v.Name == "GUISound" then
-            v:Destroy()
+-- Audio System
+local function PlaySound(soundId)
+    for _, sound in pairs(workspace:GetChildren()) do
+        if sound.Name == "LibrarySound" then
+            sound:Destroy()
         end
     end
-    local Sound = Instance.new("Sound", workspace)
-    Sound.Name = "GUISound"
-    Sound.Volume = 6
-    Sound.SoundId = id
-    Sound:Play()
+    
+    local newSound = Instance.new("Sound")
+    newSound.Name = "LibrarySound"
+    newSound.Parent = workspace
+    newSound.Volume = 0.5
+    newSound.SoundId = soundId
+    newSound:Play()
+    
+    newSound.Ended:Connect(function()
+        newSound:Destroy()
+    end)
 end
 
--- Main library function
-function library:CreateWindow(name, theme)
-    local theme1, theme2, theme3
-    local toolight = false
+-- Theme Configuration
+local Themes = {
+    ["Dark"] = {
+        Primary = Color3.fromRGB(32, 32, 32),
+        Secondary = Color3.fromRGB(26, 26, 26), 
+        Accent = Color3.fromRGB(176, 148, 255),
+        Text = Color3.fromRGB(255, 255, 255),
+        IsLight = false
+    },
+    ["Blood"] = {
+        Primary = Color3.fromRGB(32, 32, 32),
+        Secondary = Color3.fromRGB(26, 26, 26),
+        Accent = Color3.fromRGB(138, 3, 3),
+        Text = Color3.fromRGB(255, 255, 255),
+        IsLight = false
+    },
+    ["Ocean"] = {
+        Primary = Color3.fromRGB(32, 32, 32),
+        Secondary = Color3.fromRGB(26, 26, 26),
+        Accent = Color3.fromRGB(40, 81, 214),
+        Text = Color3.fromRGB(255, 255, 255),
+        IsLight = false
+    },
+    ["Emerald"] = {
+        Primary = Color3.fromRGB(32, 32, 32),
+        Secondary = Color3.fromRGB(26, 26, 26),
+        Accent = Color3.fromRGB(68, 207, 108),
+        Text = Color3.fromRGB(255, 255, 255),
+        IsLight = false
+    },
+    ["Light"] = {
+        Primary = Color3.fromRGB(245, 245, 245),
+        Secondary = Color3.fromRGB(255, 255, 255),
+        Accent = Color3.fromRGB(66, 135, 245),
+        Text = Color3.fromRGB(32, 32, 32),
+        IsLight = true
+    }
+}
+
+-- Main Library Function
+function Library:CreateWindow(windowName, themeName)
+    windowName = windowName or "Modern GUI"
+    themeName = themeName or "Dark"
     
-    -- Clean up existing GUI
-    for i, v in pairs(game.CoreGui:GetChildren()) do
-        if v.Name == "SPEED" then
-            v:Destroy()
+    local currentTheme = Themes[themeName] or Themes["Dark"]
+    
+    -- Clean existing GUI
+    for _, gui in pairs(game.CoreGui:GetChildren()) do
+        if gui.Name == "ModernGUI" then
+            gui:Destroy()
         end
     end
-
-    -- Theme selection
-    local themes = {
-        ["Normal"] = {Color3.fromRGB(32,32,32), Color3.fromRGB(26,26,26), Color3.fromRGB(176, 148, 255)},
-        ["Reverse"] = {Color3.fromRGB(26,26,26), Color3.fromRGB(32,32,32), Color3.fromRGB(176, 148, 255)},
-        ["Blood"] = {Color3.fromRGB(32,32,32), Color3.fromRGB(26,26,26), Color3.fromRGB(138, 3, 3)},
-        ["Gainsboro"] = {Color3.fromRGB(32,32,32), Color3.fromRGB(26,26,26), Color3.fromRGB(220, 220, 221), true},
-        ["Canary"] = {Color3.fromRGB(32,32,32), Color3.fromRGB(26,26,26), Color3.fromRGB(255, 253, 130)},
-        ["Emerald"] = {Color3.fromRGB(32,32,32), Color3.fromRGB(26,26,26), Color3.fromRGB(68, 207, 108)},
-        ["Crimson"] = {Color3.fromRGB(32,32,32), Color3.fromRGB(26,26,26), Color3.fromRGB(214, 40, 57)},
-        ["Deep Sea"] = {Color3.fromRGB(32,32,32), Color3.fromRGB(26,26,26), Color3.fromRGB(40, 81, 214)}
-    }
     
-    if themes[theme] then
-        theme1, theme2, theme3 = unpack(themes[theme])
-        toolight = themes[theme][4] or false
-        print("Theme selected: "..theme)
-    else
-        theme1, theme2, theme3 = Color3.fromRGB(32,32,32), Color3.fromRGB(26,26,26), Color3.fromRGB(176, 148, 255)
-        print("Default theme selected")
-    end
-
-    -- Create main GUI elements
-    local Screen = Instance.new("ScreenGui")
-    local Top = Instance.new("ImageLabel")
-    local Toggle = Instance.new("ImageButton")
-    local Main = Instance.new("ImageLabel")
+    -- Create Main GUI Structure
+    local ScreenGui = Instance.new("ScreenGui")
+    local MainFrame = Instance.new("Frame")
+    local TopBar = Instance.new("Frame")
+    local Title = Instance.new("TextLabel")
+    local ToggleButton = Instance.new("TextButton")
+    local ContentFrame = Instance.new("Frame")
     local TabContainer = Instance.new("Frame")
-    local Tabs = Instance.new("ImageLabel")
-    local ScrollTabs = Instance.new("ScrollingFrame")
-    local UIGridLayout = Instance.new("UIGridLayout")
-    local Items = Instance.new("ImageLabel")
-    local TextLabel = Instance.new("TextLabel")
-
-    -- Properties
-    Screen.Name = "SPEED"
-    Screen.Parent = game:WaitForChild("CoreGui")
-    Screen.Enabled = true
-
-    Top.Name = "Top"
-    Top.Parent = Screen
-    Top.AnchorPoint = Vector2.new(0.5, 0.5)
-    Top.BackgroundColor3 = Color3.fromRGB(33, 32, 49)
-    Top.BackgroundTransparency = 1.000
-    Top.Active = true
-    Top.Position = UDim2.new(0.5, 0, 0.240482569, 0)
-    Top.Size = UDim2.new(0, 558, 0, 25)
-    Top.Image = "rbxassetid://3570695787"
-    Top.ImageColor3 = theme1
-    Top.ScaleType = Enum.ScaleType.Slice
-    Top.SliceCenter = Rect.new(100, 100, 100, 100)
-    Top.SliceScale = 0.030
-    Top.Draggable = true
-
-    TextLabel.Parent = Top
-    TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TextLabel.BackgroundTransparency = 1.000
-    TextLabel.Position = UDim2.new(0.0358817279, 0, 0, 0)
-    TextLabel.Size = UDim2.new(0, 515, 0, 20)
-    TextLabel.Font = Enum.Font.SourceSansSemibold
-    TextLabel.Text = name
-    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TextLabel.TextSize = 14.000
-
-    Toggle.Name = "Toggle"
-    Toggle.Parent = Top
-    Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Toggle.BackgroundTransparency = 1.000
-    Toggle.Position = UDim2.new(0.00900000613, 0, 0.142857149, 0)
-    Toggle.Rotation = 90.000
-    Toggle.Size = UDim2.new(0, 15, 0, 16)
-    Toggle.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    Toggle.Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=420&height=420&assetId=4731371541"
-
-    Main.Name = "Main"
-    Main.Parent = Top
-    Main.AnchorPoint = Vector2.new(0.5, 0.5)
-    Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    Main.BackgroundTransparency = 1.000
-    Main.Position = UDim2.new(0.5, 0, 6.75571394, 0)
-    Main.Size = UDim2.new(0, 558, 0, 298)
-    Main.Image = "rbxassetid://3570695787"
-    Main.ImageColor3 = theme2
-    Main.ScaleType = Enum.ScaleType.Slice
-    Main.SliceCenter = Rect.new(100, 100, 100, 100)
-    Main.SliceScale = 0.030
-
+    local TabScroll = Instance.new("ScrollingFrame")
+    local TabLayout = Instance.new("UIListLayout")
+    local ItemContainer = Instance.new("Frame")
+    
+    -- Configure ScreenGui
+    ScreenGui.Name = "ModernGUI"
+    ScreenGui.Parent = game.CoreGui
+    ScreenGui.ResetOnSpawn = false
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    -- Main Frame Setup
+    MainFrame.Name = "MainFrame"
+    MainFrame.Parent = ScreenGui
+    MainFrame.BackgroundColor3 = currentTheme.Primary
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+    MainFrame.Size = UDim2.new(0, 600, 0, 400)
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+    
+    -- Add rounded corners
+    local MainCorner = Instance.new("UICorner")
+    MainCorner.CornerRadius = UDim.new(0, 8)
+    MainCorner.Parent = MainFrame
+    
+    -- Top Bar
+    TopBar.Name = "TopBar"
+    TopBar.Parent = MainFrame
+    TopBar.BackgroundColor3 = currentTheme.Secondary
+    TopBar.BorderSizePixel = 0
+    TopBar.Size = UDim2.new(1, 0, 0, 35)
+    
+    local TopCorner = Instance.new("UICorner")
+    TopCorner.CornerRadius = UDim.new(0, 8)
+    TopCorner.Parent = TopBar
+    
+    -- Title Label
+    Title.Name = "Title"
+    Title.Parent = TopBar
+    Title.BackgroundTransparency = 1
+    Title.Position = UDim2.new(0, 15, 0, 0)
+    Title.Size = UDim2.new(1, -50, 1, 0)
+    Title.Font = Enum.Font.SourceSansBold
+    Title.Text = windowName
+    Title.TextColor3 = currentTheme.Text
+    Title.TextSize = 16
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    
+    -- Toggle Button
+    ToggleButton.Name = "ToggleButton"
+    ToggleButton.Parent = TopBar
+    ToggleButton.BackgroundTransparency = 1
+    ToggleButton.Position = UDim2.new(1, -35, 0, 5)
+    ToggleButton.Size = UDim2.new(0, 25, 0, 25)
+    ToggleButton.Font = Enum.Font.SourceSansBold
+    ToggleButton.Text = "-"
+    ToggleButton.TextColor3 = currentTheme.Text
+    ToggleButton.TextSize = 18
+    
+    -- Content Frame
+    ContentFrame.Name = "ContentFrame"
+    ContentFrame.Parent = MainFrame
+    ContentFrame.BackgroundTransparency = 1
+    ContentFrame.Position = UDim2.new(0, 0, 0, 35)
+    ContentFrame.Size = UDim2.new(1, 0, 1, -35)
+    
+    -- Tab Container
     TabContainer.Name = "TabContainer"
-    TabContainer.Parent = Main
-    TabContainer.BackgroundTransparency = 1
-    TabContainer.Size = UDim2.new(1, 0, 1, 0)
-
-    Tabs.Name = "Tabs"
-    Tabs.Parent = TabContainer
-    Tabs.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Tabs.BackgroundTransparency = 1.000
-    Tabs.Position = UDim2.new(0.0129999956, 0, 0.0300000086, 0)
-    Tabs.Size = UDim2.new(0, 119, 0, 282)
-    Tabs.Image = "rbxassetid://3570695787"
-    Tabs.ImageColor3 = theme1
-    Tabs.ScaleType = Enum.ScaleType.Slice
-    Tabs.SliceCenter = Rect.new(100, 100, 100, 100)
-    Tabs.SliceScale = 0.020
-
-    ScrollTabs.Name = "ScrollTabs"
-    ScrollTabs.Parent = Tabs
-    ScrollTabs.Active = true
-    ScrollTabs.BackgroundTransparency = 1
-    ScrollTabs.Size = UDim2.new(1, 0, 1, 0)
-    ScrollTabs.ScrollBarThickness = 0
-    ScrollTabs.ScrollingDirection = Enum.ScrollingDirection.Y
-
-    UIGridLayout.Parent = ScrollTabs
-    UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    UIGridLayout.CellSize = UDim2.new(0, 119, 0, 26)
-
-    Items.Name = "Items"
-    Items.Parent = Main
-    Items.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Items.BackgroundTransparency = 1.000
-    Items.Position = UDim2.new(0.245519713, 0, 0.030201342, 0)
-    Items.Size = UDim2.new(0, 414, 0, 282)
-    Items.Image = "rbxassetid://3570695787"
-    Items.ImageColor3 = theme1
-    Items.ScaleType = Enum.ScaleType.Slice
-    Items.SliceCenter = Rect.new(100, 100, 100, 100)
-    Items.SliceScale = 0.020
-
-    -- Toggle functionality
-    local opened = true
-    Toggle.MouseButton1Click:Connect(function()
-        if opened then
-            Main.Visible = false
-            Toggle.Rotation = 0
-            opened = false
+    TabContainer.Parent = ContentFrame
+    TabContainer.BackgroundColor3 = currentTheme.Secondary
+    TabContainer.BorderSizePixel = 0
+    TabContainer.Position = UDim2.new(0, 10, 0, 10)
+    TabContainer.Size = UDim2.new(0, 150, 1, -20)
+    
+    local TabCorner = Instance.new("UICorner")
+    TabCorner.CornerRadius = UDim.new(0, 6)
+    TabCorner.Parent = TabContainer
+    
+    -- Tab Scroll
+    TabScroll.Name = "TabScroll"
+    TabScroll.Parent = TabContainer
+    TabScroll.BackgroundTransparency = 1
+    TabScroll.BorderSizePixel = 0
+    TabScroll.Size = UDim2.new(1, 0, 1, 0)
+    TabScroll.ScrollBarThickness = 3
+    TabScroll.ScrollBarImageColor3 = currentTheme.Accent
+    TabScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+    TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    
+    -- Tab Layout
+    TabLayout.Parent = TabScroll
+    TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    TabLayout.Padding = UDim.new(0, 5)
+    
+    -- Item Container
+    ItemContainer.Name = "ItemContainer"
+    ItemContainer.Parent = ContentFrame
+    ItemContainer.BackgroundColor3 = currentTheme.Secondary
+    ItemContainer.BorderSizePixel = 0
+    ItemContainer.Position = UDim2.new(0, 170, 0, 10)
+    ItemContainer.Size = UDim2.new(1, -180, 1, -20)
+    
+    local ItemCorner = Instance.new("UICorner")
+    ItemCorner.CornerRadius = UDim.new(0, 6)
+    ItemCorner.Parent = ItemContainer
+    
+    -- Toggle Functionality
+    local isMinimized = false
+    ToggleButton.MouseButton1Click:Connect(function()
+        isMinimized = not isMinimized
+        PlaySound("rbxassetid://131961136")
+        
+        if isMinimized then
+            ContentFrame.Visible = false
+            MainFrame.Size = UDim2.new(0, 600, 0, 35)
+            ToggleButton.Text = "+"
         else
-            Main.Visible = true
-            Toggle.Rotation = 90
-            opened = true
+            ContentFrame.Visible = true
+            MainFrame.Size = UDim2.new(0, 600, 0, 400)
+            ToggleButton.Text = "-"
         end
     end)
-
-    local InsideLibrary = {}
-
-    function InsideLibrary:CreateTab(text)
-        local TextButton1 = Instance.new("TextButton")
-        local Frame = Instance.new("ScrollingFrame")
-        local UIGridLayout_2 = Instance.new("UIGridLayout")
-        local UICorner = Instance.new("UICorner")
-
-        TextButton1.Name = text.." Button"
-        TextButton1.Parent = ScrollTabs
-        TextButton1.BackgroundColor3 = Color3.fromRGB(32,32,32)
-        TextButton1.BackgroundTransparency = 1.000
-        TextButton1.Size = UDim2.new(0, 70, 0, 21)
-        TextButton1.Font = Enum.Font.SourceSansSemibold
-        TextButton1.Text = text
-        TextButton1.TextColor3 = Color3.fromRGB(255, 255, 255)
-        TextButton1.TextSize = 14.000
-
-        Frame.Parent = Items
-        Frame.Active = true
-        Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        Frame.BackgroundTransparency = 1.000
-        Frame.BorderSizePixel = 0
-        Frame.Position = UDim2.new(0.0170000009, 0, 0.0359999985, 0)
-        Frame.Size = UDim2.new(0, 399, 0, 264)
-        Frame.CanvasSize = UDim2.new(0, 0, 1.1, 0)
-        Frame.ScrollBarImageColor3 = theme2
-        Frame.ScrollBarThickness = 7
-
-        UICorner.Parent = Frame
-
-        UIGridLayout_2.Parent = Frame
-        UIGridLayout_2.FillDirection = Enum.FillDirection.Vertical
-        UIGridLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
-        UIGridLayout_2.CellSize = UDim2.new(0, 70, 0, 23)
-        UIGridLayout_2.StartCorner = Enum.StartCorner.TopRight
-
-        Frame.ChildAdded:Connect(function()
-            if #Frame:GetChildren() > 13 then
-                Frame.CanvasSize = UDim2.new(0, 0, Frame.CanvasSize.Y.Scale + 0.10, 0)
+    
+    -- Window Object
+    local WindowObject = {}
+    
+    function WindowObject:CreateTab(tabName)
+        tabName = tabName or "New Tab"
+        
+        -- Create Tab Button
+        local TabButton = Instance.new("TextButton")
+        local TabFrame = Instance.new("ScrollingFrame")
+        local ItemLayout = Instance.new("UIListLayout")
+        
+        TabButton.Name = tabName .. "Button"
+        TabButton.Parent = TabScroll
+        TabButton.BackgroundColor3 = currentTheme.Primary
+        TabButton.BorderSizePixel = 0
+        TabButton.Size = UDim2.new(1, -10, 0, 35)
+        TabButton.Font = Enum.Font.SourceSansSemibold
+        TabButton.Text = tabName
+        TabButton.TextColor3 = currentTheme.Text
+        TabButton.TextSize = 14
+        
+        local ButtonCorner = Instance.new("UICorner")
+        ButtonCorner.CornerRadius = UDim.new(0, 4)
+        ButtonCorner.Parent = TabButton
+        
+        -- Create Tab Content Frame
+        TabFrame.Name = tabName .. "Frame"
+        TabFrame.Parent = ItemContainer
+        TabFrame.BackgroundTransparency = 1
+        TabFrame.BorderSizePixel = 0
+        TabFrame.Position = UDim2.new(0, 10, 0, 10)
+        TabFrame.Size = UDim2.new(1, -20, 1, -20)
+        TabFrame.ScrollBarThickness = 3
+        TabFrame.ScrollBarImageColor3 = currentTheme.Accent
+        TabFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+        TabFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+        TabFrame.Visible = false
+        
+        -- Item Layout
+        ItemLayout.Parent = TabFrame
+        ItemLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        ItemLayout.Padding = UDim.new(0, 8)
+        
+        -- Tab Button Click
+        TabButton.MouseButton1Click:Connect(function()
+            -- Hide all tabs
+            for _, child in pairs(ItemContainer:GetChildren()) do
+                if child:IsA("ScrollingFrame") then
+                    child.Visible = false
+                end
             end
+            
+            -- Reset all tab buttons
+            for _, child in pairs(TabScroll:GetChildren()) do
+                if child:IsA("TextButton") then
+                    child.BackgroundColor3 = currentTheme.Primary
+                    child.TextColor3 = currentTheme.Text
+                end
+            end
+            
+            -- Show current tab
+            TabFrame.Visible = true
+            TabButton.BackgroundColor3 = currentTheme.Accent
+            TabButton.TextColor3 = currentTheme.IsLight and currentTheme.Primary or Color3.fromRGB(255, 255, 255)
+            
+            PlaySound("rbxassetid://131961136")
         end)
-
-        TextButton1.MouseButton1Click:Connect(function()
-            for i, v in next, Items:GetChildren() do
-                v.Visible = false
-            end
-            for i, t in next, ScrollTabs:GetChildren() do
-                if t:IsA("TextButton") then
-                    t.TextColor3 = Color3.fromRGB(255, 255, 255)
-                end
-            end
-            TextButton1.TextColor3 = theme3
-            Frame.Visible = true
-            play("rbxassetid://1412830636")
+        
+        -- Auto-update canvas size
+        ItemLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            TabFrame.CanvasSize = UDim2.new(0, 0, 0, ItemLayout.AbsoluteContentSize.Y + 10)
         end)
-
-        local InsideTab = {}
-
-        function InsideTab:CreateDropdown(text, list, callback)
+        
+        -- Tab Object
+        local TabObject = {}
+        
+        function TabObject:CreateButton(buttonText, callback)
+            buttonText = buttonText or "Button"
             callback = callback or function() end
-            list = list or {}
-            text = text or "Dropdown"
             
-            local BodyYSize = 0
-            local IsDropped = false
-            
-            local Dropdown = Instance.new("TextLabel")
-            local ToggleButton = Instance.new("TextButton")
-            local ButtonRoundCorner = Instance.new("ImageLabel")
-            local DropdownContainer = Instance.new("ImageLabel")
-            local DropdownListLayout = Instance.new("UIListLayout")
-
-            Dropdown.Name = "Dropdown"
-            Dropdown.Parent = Frame
-            Dropdown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Dropdown.BackgroundTransparency = 1.000
-            Dropdown.Size = UDim2.new(0, 200, 0, 50)
-            Dropdown.Font = Enum.Font.SourceSansSemibold
-            Dropdown.Text = text
-            Dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Dropdown.TextSize = 14.000
-
-            ToggleButton.Parent = Dropdown
-            ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            ToggleButton.BackgroundTransparency = 1.000
-            ToggleButton.BorderSizePixel = 0
-            ToggleButton.Position = UDim2.new(1, 0, 0, 0)
-            ToggleButton.Size = UDim2.new(0, 31, 0, 27)
-            ToggleButton.ZIndex = 2
-            ToggleButton.Font = Enum.Font.SourceSansBold
-            ToggleButton.Text = "+"
-            ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-            ToggleButton.TextSize = 14.000
-
-            ButtonRoundCorner.Name = "TextButton_Roundify_2px"
-            ButtonRoundCorner.Parent = ToggleButton
-            ButtonRoundCorner.Active = true
-            ButtonRoundCorner.AnchorPoint = Vector2.new(0.5, 0.5)
-            ButtonRoundCorner.BackgroundTransparency = 1.000
-            ButtonRoundCorner.Position = UDim2.new(0.5, 0, 0.5, 0)
-            ButtonRoundCorner.Selectable = true
-            ButtonRoundCorner.Size = UDim2.new(1, 0, 1, 0)
-            ButtonRoundCorner.Image = "rbxassetid://3570695787"
-            ButtonRoundCorner.ImageColor3 = theme2
-            ButtonRoundCorner.ScaleType = Enum.ScaleType.Slice
-            ButtonRoundCorner.SliceCenter = Rect.new(100, 100, 100, 100)
-            ButtonRoundCorner.SliceScale = 0.020
-
-            ToggleButton.MouseButton1Click:Connect(function()
-                play("rbxassetid://178104975")
-                IsDropped = not IsDropped
-                
-                if IsDropped then
-                    ToggleButton.TextColor3 = theme3
-                    DropdownContainer.Visible = true
-                else
-                    ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    DropdownContainer.Visible = false
-                end
-            end)
-
-            DropdownContainer.Name = "DropdownContainer"
-            DropdownContainer.Parent = ToggleButton
-            DropdownContainer.BackgroundTransparency = 1.000
-            DropdownContainer.Position = UDim2.new(1.46359456, 0, 0, 0)
-            DropdownContainer.Size = UDim2.new(0, 197, 0, BodyYSize)
-            DropdownContainer.Image = "rbxassetid://3570695787"
-            DropdownContainer.ImageColor3 = theme2
-            DropdownContainer.Visible = false
-            DropdownContainer.ScaleType = Enum.ScaleType.Slice
-            DropdownContainer.SliceCenter = Rect.new(100, 100, 100, 100)
-            DropdownContainer.SliceScale = 0.020
-            DropdownContainer.ZIndex = 3
-
-            DropdownListLayout.Parent = DropdownContainer
-            DropdownListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-            for i, v in pairs(list) do
-                BodyYSize = BodyYSize + 27
-                
-                local OptionButton = Instance.new("TextButton")
-                OptionButton.Parent = DropdownContainer
-                OptionButton.BackgroundTransparency = 1.000
-                OptionButton.Size = UDim2.new(0, 197, 0, 27)
-                OptionButton.Font = Enum.Font.SourceSansSemibold
-                OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-                OptionButton.Text = v
-                OptionButton.TextSize = 14.000
-                OptionButton.ZIndex = 4
-
-                OptionButton.MouseButton1Click:Connect(function()
-                    Dropdown.Text = text..": "..v
-                    callback(v)
-                    IsDropped = false
-                    DropdownContainer.Visible = false
-                    ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-                end)
-            end
-            
-            DropdownContainer.Size = UDim2.new(0, 197, 0, BodyYSize)
-        end
-
-        function InsideTab:CreateSlider(text, minvalue, maxvalue, callback)
-            text = text or "Slider"
-            minvalue = minvalue or 0
-            maxvalue = maxvalue or 100
-            callback = callback or function() end
-
-            local mouse = game.Players.LocalPlayer:GetMouse()
-            local uis = game:GetService("UserInputService")
-            local Value
-
-            local Slider = Instance.new("TextLabel")
-            local Frame_3 = Instance.new("ImageLabel")
-            local SliderButton = Instance.new("TextButton")
-            local TextButton_Roundify_2px = Instance.new("ImageLabel")
-            local SliderInner = Instance.new("ImageLabel")
-            local TextLabel_2 = Instance.new("TextLabel")
-            
-            Slider.Name = "Slider"
-            Slider.Parent = Frame
-            Slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Slider.BackgroundTransparency = 1.000
-            Slider.Size = UDim2.new(0, 200, 0, 50)
-            Slider.Font = Enum.Font.SourceSansSemibold
-            Slider.Text = text
-            Slider.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Slider.TextSize = 14.000
-            
-            Frame_3.Name = "Frame"
-            Frame_3.Parent = Slider
-            Frame_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Frame_3.BackgroundTransparency = 1.000
-            Frame_3.Position = UDim2.new(1, 0, 0.395000011, 0)
-            Frame_3.Size = UDim2.new(0, 148, 0, 8)
-            Frame_3.Image = "rbxassetid://3570695787"
-            Frame_3.ImageColor3 = theme2
-            Frame_3.ScaleType = Enum.ScaleType.Slice
-            Frame_3.SliceCenter = Rect.new(100, 100, 100, 100)
-            Frame_3.SliceScale = 0.020
-            
-            SliderButton.Name = "SliderButton"
-            SliderButton.Parent = Slider
-            SliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            SliderButton.BackgroundTransparency = 1.000
-            SliderButton.BorderSizePixel = 0
-            SliderButton.Position = UDim2.new(1, 0, 0.391304344, 0)
-            SliderButton.Size = UDim2.new(0, 148, 0, 8)
-            SliderButton.Font = Enum.Font.SourceSans
-            SliderButton.Text = ""
-            SliderButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-            SliderButton.TextSize = 14.000
-            
-            TextButton_Roundify_2px.Name = "TextButton_Roundify_2px"
-            TextButton_Roundify_2px.Parent = SliderButton
-            TextButton_Roundify_2px.Active = true
-            TextButton_Roundify_2px.AnchorPoint = Vector2.new(0.5, 0.5)
-            TextButton_Roundify_2px.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            TextButton_Roundify_2px.BackgroundTransparency = 1.000
-            TextButton_Roundify_2px.Position = UDim2.new(0.5, 0, 0.5, 0)
-            TextButton_Roundify_2px.Selectable = true
-            TextButton_Roundify_2px.Size = UDim2.new(1, 0, 1, 0)
-            TextButton_Roundify_2px.Image = "rbxassetid://3570695787"
-            TextButton_Roundify_2px.ImageColor3 = theme2
-            TextButton_Roundify_2px.ScaleType = Enum.ScaleType.Slice
-            TextButton_Roundify_2px.SliceCenter = Rect.new(100, 100, 100, 100)
-            TextButton_Roundify_2px.SliceScale = 0.020
-            
-            SliderInner.Name = "SliderInner"
-            SliderInner.Parent = SliderButton
-            SliderInner.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            SliderInner.BackgroundTransparency = 1.000
-            SliderInner.Size = UDim2.new(0, 0, 0, 8)
-            SliderInner.Image = "rbxassetid://3570695787"
-            SliderInner.ImageColor3 = theme3
-            SliderInner.ScaleType = Enum.ScaleType.Slice
-            SliderInner.SliceCenter = Rect.new(100, 100, 100, 100)
-            SliderInner.SliceScale = 0.020
-            
-            TextLabel_2.Parent = Slider
-            TextLabel_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            TextLabel_2.BackgroundTransparency = 1.000
-            TextLabel_2.BorderSizePixel = 2
-            TextLabel_2.Position = UDim2.new(3.10714293, 0, 0.4, 0)
-            TextLabel_2.Size = UDim2.new(0, 33, 0, 7)
-            TextLabel_2.Font = Enum.Font.SourceSansBold
-            TextLabel_2.Text = tostring(minvalue)
-            TextLabel_2.TextColor3 = theme3
-            TextLabel_2.TextSize = 13.000
-            TextLabel_2.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-
-            SliderButton.MouseButton1Down:Connect(function()
-                Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 148) * SliderInner.AbsoluteSize.X) + tonumber(minvalue)) or 0
-                pcall(function()
-                    callback(Value)
-                    TextLabel_2.Text = Value
-                end)
-                SliderInner.Size = UDim2.new(0, math.clamp(mouse.X - SliderInner.AbsolutePosition.X, 0, 148), 0, 8)
-                local moveconnection = mouse.Move:Connect(function()
-                    Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 148) * SliderInner.AbsoluteSize.X) + tonumber(minvalue))
-                    pcall(function()
-                        callback(Value)
-                        TextLabel_2.Text = Value
-                    end)
-                    SliderInner.Size = UDim2.new(0, math.clamp(mouse.X - SliderInner.AbsolutePosition.X, 0, 148), 0, 8)
-                end)
-                local releaseconnection = uis.InputEnded:Connect(function(Mouse)
-                    if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
-                        Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 148) * SliderInner.AbsoluteSize.X) + tonumber(minvalue))
-                        pcall(function()
-                            callback(Value)
-                        end)
-                        SliderInner.Size = UDim2.new(0, math.clamp(mouse.X - SliderInner.AbsolutePosition.X, 0, 148), 0, 8)
-                        moveconnection:Disconnect()
-                        releaseconnection:Disconnect()
-                    end
-                end)
-            end)
-        end
-
-        function InsideTab:Show()
-            for i, v in next, Items:GetChildren() do
-                v.Visible = false
-            end
-            Frame.Visible = true
-            TextButton1.TextColor3 = theme3
-        end
-
-        function InsideTab:CreateToggle(text, callback)
-            text = text or "New Toggle"
-            callback = callback or function() end
-            local switchactions = {}
-            local Toggle_2 = Instance.new("TextLabel")
-            local Frame_t = Instance.new("ImageLabel")
-            local Frame_2 = Instance.new("ImageLabel")
-            local ToggleButton = Instance.new("TextButton")
-
-            Toggle_2.Name = "Toggle"
-            Toggle_2.Parent = Frame
-            Toggle_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Toggle_2.BackgroundTransparency = 1.000
-            Toggle_2.Size = UDim2.new(0, 200, 0, 50)
-            Toggle_2.Font = Enum.Font.SourceSansSemibold
-            Toggle_2.Text = text
-            Toggle_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Toggle_2.TextSize = 14.000
-
-            Frame_t.Name = "Frame"
-            Frame_t.Parent = Toggle_2
-            Frame_t.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Frame_t.BackgroundTransparency = 1.000
-            Frame_t.Position = UDim2.new(1, 0, 0.333333343, 0)
-            Frame_t.Size = UDim2.new(0, 27, 0, 13)
-            Frame_t.Image = "rbxassetid://3570695787"
-            Frame_t.ImageColor3 = theme2
-            Frame_t.ScaleType = Enum.ScaleType.Slice
-            Frame_t.SliceCenter = Rect.new(100, 100, 100, 100)
-            Frame_t.SliceScale = 0.250
-
-            Frame_2.Name = "Frame_2"
-            Frame_2.Parent = Frame_t
-            Frame_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Frame_2.BackgroundTransparency = 1.000
-            Frame_2.Position = UDim2.new(0, 3, 0.150000006, 0)
-            Frame_2.Size = UDim2.new(0, 9, 0, 9)
-            Frame_2.Image = "rbxassetid://3570695787"
-            Frame_2.ScaleType = Enum.ScaleType.Slice
-            Frame_2.SliceCenter = Rect.new(100, 100, 100, 100)
-            Frame_2.SliceScale = 0.250
-
-            ToggleButton.Name = "ToggleButton"
-            ToggleButton.Parent = Toggle_2
-            ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            ToggleButton.BackgroundTransparency = 1.000
-            ToggleButton.Position = UDim2.new(1, 0, 0.333333552, 0)
-            ToggleButton.Size = UDim2.new(0, 27, 0, 15)
-            ToggleButton.Font = Enum.Font.SourceSans
-            ToggleButton.Text = ""
-            ToggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-            ToggleButton.TextSize = 14.000
-
-            local enabled = false
-            local function trigger()
-                enabled = not enabled
-                pcall(callback, enabled)
-                play("rbxassetid://6309164078")
-                if enabled then
-                    Frame_t.ImageColor3 = theme3
-                    if toolight then
-                        Frame_2.ImageColor3 = Color3.fromRGB(26,26,26)
-                    end
-                    Frame_2.Position = UDim2.new(0.59, 0, 0.150000006, 0)
-                else
-                    Frame_t.ImageColor3 = theme2
-                    if toolight then
-                        Frame_2.ImageColor3 = theme3
-                    end
-                    Frame_2.Position = UDim2.new(0, 3, 0.150000006, 0)
-                end
-            end
-
-            ToggleButton.MouseButton1Click:Connect(trigger)
-
-            function switchactions:Set(state)
-                enabled = state
-                if enabled then
-                    Frame_t.ImageColor3 = theme3
-                    if toolight then
-                        Frame_2.ImageColor3 = Color3.fromRGB(26,26,26)
-                    end
-                    Frame_2.Position = UDim2.new(0.59, 0, 0.150000006, 0)
-                else
-                    Frame_t.ImageColor3 = theme2
-                    if toolight then
-                        Frame_2.ImageColor3 = theme3
-                    end
-                    Frame_2.Position = UDim2.new(0, 3, 0.150000006, 0)
-                end
-                pcall(callback, enabled)
-            end
-            return switchactions
-        end
-
-        function InsideTab:CreateCheckbox(text, callback)
-            local Cheat = Instance.new("TextLabel")
-            local MainCheatFrame = Instance.new("ImageLabel")
-            local InsideCheatFrame = Instance.new("ImageLabel")
-            local CheatButton = Instance.new("TextButton")
-            
-            Cheat.Name = "Cheat"
-            Cheat.Parent = Frame
-            Cheat.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Cheat.BackgroundTransparency = 1.000
-            Cheat.Size = UDim2.new(0, 200, 0, 50)
-            Cheat.Text = text
-            Cheat.Font = Enum.Font.SourceSansSemibold
-            Cheat.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Cheat.TextSize = 14.000
-            
-            MainCheatFrame.Name = "MainCheatFrame"
-            MainCheatFrame.Parent = Cheat
-            MainCheatFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            MainCheatFrame.BackgroundTransparency = 1.000
-            MainCheatFrame.Position = UDim2.new(1, 0, 0.129999995, 0)
-            MainCheatFrame.Size = UDim2.new(0, 18, 0, 18)
-            MainCheatFrame.Image = "rbxassetid://3570695787"
-            MainCheatFrame.ImageColor3 = theme2
-            MainCheatFrame.ScaleType = Enum.ScaleType.Slice
-            MainCheatFrame.SliceCenter = Rect.new(100, 100, 100, 100)
-            MainCheatFrame.SliceScale = 0.020
-            
-            InsideCheatFrame.Name = "Frame"
-            InsideCheatFrame.Parent = MainCheatFrame
-            InsideCheatFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-            InsideCheatFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            InsideCheatFrame.BackgroundTransparency = 1.000
-            InsideCheatFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-            InsideCheatFrame.Size = UDim2.new(0, 14, 0, 14)
-            InsideCheatFrame.Image = "rbxassetid://3570695787"
-            InsideCheatFrame.ImageColor3 = theme2
-            InsideCheatFrame.ScaleType = Enum.ScaleType.Slice
-            InsideCheatFrame.SliceCenter = Rect.new(100, 100, 100, 100)
-            InsideCheatFrame.SliceScale = 0.020
-            
-            CheatButton.Parent = MainCheatFrame
-            CheatButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            CheatButton.BackgroundTransparency = 1.000
-            CheatButton.Size = UDim2.new(0, 18, 0, 18)
-            CheatButton.Font = Enum.Font.SourceSans
-            CheatButton.Text = ""
-            CheatButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-            CheatButton.TextSize = 14.000
-            CheatButton.ZIndex = 2
-
-            local enabledcheat = false
-            local function triggercheat()
-                enabledcheat = not enabledcheat
-                pcall(callback, enabledcheat)
-                play("rbxassetid://6309164078")
-                if enabledcheat then
-                    InsideCheatFrame.ImageColor3 = theme3
-                else
-                    InsideCheatFrame.ImageColor3 = theme2
-                end
-            end
-            
-            CheatButton.MouseButton1Click:Connect(triggercheat)
-        end
-
-        function InsideTab:CreateButton(text, callback)
-            text = text or "New Button"
-            callback = callback or function() end
             local Button = Instance.new("TextButton")
-            local Button_Roundify_3px = Instance.new("ImageLabel")
-            
-            Button.Name = "Btn"
-            Button.Parent = Frame
-            Button.BackgroundColor3 = Color3.fromRGB(116, 116, 116)
-            Button.BackgroundTransparency = 1.000
+            Button.Name = "Button"
+            Button.Parent = TabFrame
+            Button.BackgroundColor3 = currentTheme.Primary
             Button.BorderSizePixel = 0
-            Button.Position = UDim2.new(-0.00554528646, 0, 0.0607142858, 0)
-            Button.Size = UDim2.new(0, 36, 0, 21)
-            Button.ZIndex = 2
+            Button.Size = UDim2.new(1, 0, 0, 35)
             Button.Font = Enum.Font.SourceSansSemibold
-            Button.Text = text
-            Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Button.TextSize = 14.000
+            Button.Text = buttonText
+            Button.TextColor3 = currentTheme.Text
+            Button.TextSize = 14
             
-            Button_Roundify_3px.Name = "Button_Roundify_3px"
-            Button_Roundify_3px.Parent = Button
-            Button_Roundify_3px.Active = true
-            Button_Roundify_3px.AnchorPoint = Vector2.new(0.5, 0.5)
-            Button_Roundify_3px.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Button_Roundify_3px.BackgroundTransparency = 1.000
-            Button_Roundify_3px.Position = UDim2.new(0.5, 0, 0.5, 0)
-            Button_Roundify_3px.Selectable = true
-            Button_Roundify_3px.Size = UDim2.new(1, 0, 1, 0)
-            Button_Roundify_3px.Image = "rbxassetid://3570695787"
-            Button_Roundify_3px.ImageColor3 = theme2
-            Button_Roundify_3px.ScaleType = Enum.ScaleType.Slice
-            Button_Roundify_3px.SliceCenter = Rect.new(100, 100, 100, 100)
-            Button_Roundify_3px.SliceScale = 0.030
-
+            local ButtonCorner = Instance.new("UICorner")
+            ButtonCorner.CornerRadius = UDim.new(0, 4)
+            ButtonCorner.Parent = Button
+            
             Button.MouseButton1Click:Connect(function()
+                PlaySound("rbxassetid://131961136")
                 pcall(callback)
-                play("rbxassetid://178104975")
+            end)
+            
+            -- Hover effect
+            Button.MouseEnter:Connect(function()
+                Button.BackgroundColor3 = currentTheme.Accent
+            end)
+            
+            Button.MouseLeave:Connect(function()
+                Button.BackgroundColor3 = currentTheme.Primary
             end)
         end
         
-        return InsideTab
+        function TabObject:CreateToggle(toggleText, defaultState, callback)
+            toggleText = toggleText or "Toggle"
+            defaultState = defaultState or false
+            callback = callback or function() end
+            
+            local ToggleFrame = Instance.new("Frame")
+            local ToggleLabel = Instance.new("TextLabel")
+            local ToggleButton = Instance.new("TextButton")
+            local ToggleIndicator = Instance.new("Frame")
+            
+            ToggleFrame.Name = "ToggleFrame"
+            ToggleFrame.Parent = TabFrame
+            ToggleFrame.BackgroundColor3 = currentTheme.Primary
+            ToggleFrame.BorderSizePixel = 0
+            ToggleFrame.Size = UDim2.new(1, 0, 0, 35)
+            
+            local ToggleCorner = Instance.new("UICorner")
+            ToggleCorner.CornerRadius = UDim.new(0, 4)
+            ToggleCorner.Parent = ToggleFrame
+            
+            ToggleLabel.Name = "Label"
+            ToggleLabel.Parent = ToggleFrame
+            ToggleLabel.BackgroundTransparency = 1
+            ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
+            ToggleLabel.Size = UDim2.new(1, -60, 1, 0)
+            ToggleLabel.Font = Enum.Font.SourceSansSemibold
+            ToggleLabel.Text = toggleText
+            ToggleLabel.TextColor3 = currentTheme.Text
+            ToggleLabel.TextSize = 14
+            ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            
+            ToggleButton.Name = "Button"
+            ToggleButton.Parent = ToggleFrame
+            ToggleButton.BackgroundColor3 = currentTheme.Secondary
+            ToggleButton.BorderSizePixel = 0
+            ToggleButton.Position = UDim2.new(1, -45, 0.5, -10)
+            ToggleButton.Size = UDim2.new(0, 35, 0, 20)
+            ToggleButton.Text = ""
+            
+            local ToggleBtnCorner = Instance.new("UICorner")
+            ToggleBtnCorner.CornerRadius = UDim.new(0, 10)
+            ToggleBtnCorner.Parent = ToggleButton
+            
+            ToggleIndicator.Name = "Indicator"
+            ToggleIndicator.Parent = ToggleButton
+            ToggleIndicator.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+            ToggleIndicator.BorderSizePixel = 0
+            ToggleIndicator.Position = UDim2.new(0, 2, 0, 2)
+            ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
+            
+            local IndicatorCorner = Instance.new("UICorner")
+            IndicatorCorner.CornerRadius = UDim.new(0, 8)
+            IndicatorCorner.Parent = ToggleIndicator
+            
+            local isEnabled = defaultState
+            
+            local function UpdateToggle()
+                if isEnabled then
+                    ToggleButton.BackgroundColor3 = currentTheme.Accent
+                    ToggleIndicator.Position = UDim2.new(1, -18, 0, 2)
+                    ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                else
+                    ToggleButton.BackgroundColor3 = currentTheme.Secondary
+                    ToggleIndicator.Position = UDim2.new(0, 2, 0, 2)
+                    ToggleIndicator.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+                end
+                pcall(callback, isEnabled)
+            end
+            
+            ToggleButton.MouseButton1Click:Connect(function()
+                isEnabled = not isEnabled
+                PlaySound("rbxassetid://131961136")
+                UpdateToggle()
+            end)
+            
+            UpdateToggle()
+            
+            return {
+                SetState = function(state)
+                    isEnabled = state
+                    UpdateToggle()
+                end
+            }
+        end
+        
+        function TabObject:CreateSlider(sliderText, minValue, maxValue, defaultValue, callback)
+            sliderText = sliderText or "Slider"
+            minValue = minValue or 0
+            maxValue = maxValue or 100
+            defaultValue = defaultValue or minValue
+            callback = callback or function() end
+            
+            local SliderFrame = Instance.new("Frame")
+            local SliderLabel = Instance.new("TextLabel")
+            local SliderValueLabel = Instance.new("TextLabel")
+            local SliderTrack = Instance.new("Frame")
+            local SliderFill = Instance.new("Frame")
+            local SliderButton = Instance.new("TextButton")
+            
+            SliderFrame.Name = "SliderFrame"
+            SliderFrame.Parent = TabFrame
+            SliderFrame.BackgroundColor3 = currentTheme.Primary
+            SliderFrame.BorderSizePixel = 0
+            SliderFrame.Size = UDim2.new(1, 0, 0, 50)
+            
+            local SliderCorner = Instance.new("UICorner")
+            SliderCorner.CornerRadius = UDim.new(0, 4)
+            SliderCorner.Parent = SliderFrame
+            
+            SliderLabel.Name = "Label"
+            SliderLabel.Parent = SliderFrame
+            SliderLabel.BackgroundTransparency = 1
+            SliderLabel.Position = UDim2.new(0, 10, 0, 5)
+            SliderLabel.Size = UDim2.new(1, -60, 0, 20)
+            SliderLabel.Font = Enum.Font.SourceSansSemibold
+            SliderLabel.Text = sliderText
+            SliderLabel.TextColor3 = currentTheme.Text
+            SliderLabel.TextSize = 14
+            SliderLabel.TextXAlignment = Enum.TextXAlignment.Left
+            
+            SliderValueLabel.Name = "ValueLabel"
+            SliderValueLabel.Parent = SliderFrame
+            SliderValueLabel.BackgroundTransparency = 1
+            SliderValueLabel.Position = UDim2.new(1, -50, 0, 5)
+            SliderValueLabel.Size = UDim2.new(0, 40, 0, 20)
+            SliderValueLabel.Font = Enum.Font.SourceSansBold
+            SliderValueLabel.Text = tostring(defaultValue)
+            SliderValueLabel.TextColor3 = currentTheme.Accent
+            SliderValueLabel.TextSize = 14
+            SliderValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+            
+            SliderTrack.Name = "Track"
+            SliderTrack.Parent = SliderFrame
+            SliderTrack.BackgroundColor3 = currentTheme.Secondary
+            SliderTrack.BorderSizePixel = 0
+            SliderTrack.Position = UDim2.new(0, 10, 0, 30)
+            SliderTrack.Size = UDim2.new(1, -20, 0, 6)
+            
+            local TrackCorner = Instance.new("UICorner")
+            TrackCorner.CornerRadius = UDim.new(0, 3)
+            TrackCorner.Parent = SliderTrack
+            
+            SliderFill.Name = "Fill"
+            SliderFill.Parent = SliderTrack
+            SliderFill.BackgroundColor3 = currentTheme.Accent
+            SliderFill.BorderSizePixel = 0
+            SliderFill.Size = UDim2.new(0, 0, 1, 0)
+            
+            local FillCorner = Instance.new("UICorner")
+            FillCorner.CornerRadius = UDim.new(0, 3)
+            FillCorner.Parent = SliderFill
+            
+            SliderButton.Name = "Button"
+            SliderButton.Parent = SliderTrack
+            SliderButton.BackgroundTransparency = 1
+            SliderButton.Size = UDim2.new(1, 0, 1, 0)
+            SliderButton.Text = ""
+            
+            local currentValue = defaultValue
+            local isDragging = false
+            
+            local function UpdateSlider(value)
+                currentValue = math.clamp(value, minValue, maxValue)
+                local percentage = (currentValue - minValue) / (maxValue - minValue)
+                SliderFill.Size = UDim2.new(percentage, 0, 1, 0)
+                SliderValueLabel.Text = tostring(math.floor(currentValue))
+                pcall(callback, currentValue)
+            end
+            
+            SliderButton.MouseButton1Down:Connect(function()
+                isDragging = true
+                PlaySound("rbxassetid://131961136")
+            end)
+            
+            UserInputService.InputChanged:Connect(function(input)
+                if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    local percentage = math.clamp((Mouse.X - SliderTrack.AbsolutePosition.X) / SliderTrack.AbsoluteSize.X, 0, 1)
+                    local value = minValue + (percentage * (maxValue - minValue))
+                    UpdateSlider(value)
+                end
+            end)
+            
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isDragging = false
+                end
+            end)
+            
+            UpdateSlider(defaultValue)
+        end
+        
+        function TabObject:CreateDropdown(dropdownText, options, callback)
+            dropdownText = dropdownText or "Dropdown"
+            options = options or {}
+            callback = callback or function() end
+            
+            local DropdownFrame = Instance.new("Frame")
+            local DropdownButton = Instance.new("TextButton")
+            local DropdownLabel = Instance.new("TextLabel")
+            local DropdownArrow = Instance.new("TextLabel")
+            local DropdownList = Instance.new("ScrollingFrame")
+            local ListLayout = Instance.new("UIListLayout")
+            
+            DropdownFrame.Name = "DropdownFrame"
+            DropdownFrame.Parent = TabFrame
+            DropdownFrame.BackgroundColor3 = currentTheme.Primary
+            DropdownFrame.BorderSizePixel = 0
+            DropdownFrame.Size = UDim2.new(1, 0, 0, 35)
+            DropdownFrame.ClipsDescendants = true
+            
+            local DropdownCorner = Instance.new("UICorner")
+            DropdownCorner.CornerRadius = UDim.new(0, 4)
+            DropdownCorner.Parent = DropdownFrame
+            
+            DropdownButton.Name = "Button"
+            DropdownButton.Parent = DropdownFrame
+            DropdownButton.BackgroundTransparency = 1
+            DropdownButton.Size = UDim2.new(1, 0, 0, 35)
+            DropdownButton.Text = ""
+            
+            DropdownLabel.Name = "Label"
+            DropdownLabel.Parent = DropdownButton
+            DropdownLabel.BackgroundTransparency = 1
+            DropdownLabel.Position = UDim2.new(0, 10, 0, 0)
+            DropdownLabel.Size = UDim2.new(1, -30, 1, 0)
+            DropdownLabel.Font = Enum.Font.SourceSansSemibold
+            DropdownLabel.Text = dropdownText
+            DropdownLabel.TextColor3 = currentTheme.Text
+            DropdownLabel.TextSize = 14
+            DropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
+            
+            DropdownArrow.Name = "Arrow"
+            DropdownArrow.Parent = DropdownButton
+            DropdownArrow.BackgroundTransparency = 1
+            DropdownArrow.Position = UDim2.new(1, -25, 0, 0)
+            DropdownArrow.Size = UDim2.new(0, 20, 1, 0)
+            DropdownArrow.Font = Enum.Font.SourceSansBold
+            DropdownArrow.Text = "v"
+            DropdownArrow.TextColor3 = currentTheme.Accent
+            DropdownArrow.TextSize = 14
+            
+            DropdownList.Name = "List"
+            DropdownList.Parent = DropdownFrame
+            DropdownList.BackgroundTransparency = 1
+            DropdownList.BorderSizePixel = 0
+            DropdownList.Position = UDim2.new(0, 0, 0, 35)
+            DropdownList.Size = UDim2.new(1, 0, 0, 0)
+            DropdownList.ScrollBarThickness = 2
+            DropdownList.ScrollBarImageColor3 = currentTheme.Accent
+            DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
+            DropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
+            
+            ListLayout.Parent = DropdownList
+            ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+            
+            local isOpen = false
+            
+            -- Create option buttons
+            for _, option in pairs(options) do
+                local OptionButton = Instance.new("TextButton")
+                OptionButton.Name = "Option"
+                OptionButton.Parent = DropdownList
+                OptionButton.BackgroundColor3 = currentTheme.Secondary
+                OptionButton.BorderSizePixel = 0
+                OptionButton.Size = UDim2.new(1, 0, 0, 30)
+                OptionButton.Font = Enum.Font.SourceSans
+                OptionButton.Text = option
+                OptionButton.TextColor3 = currentTheme.Text
+                OptionButton.TextSize = 14
+                
+                OptionButton.MouseButton1Click:Connect(function()
+                    DropdownLabel.Text = dropdownText .. ": " .. option
+                    pcall(callback, option)
+                    PlaySound("rbxassetid://131961136")
+                    
+                    -- Close dropdown
+                    isOpen = false
+                    DropdownFrame.Size = UDim2.new(1, 0, 0, 35)
+                    DropdownList.Size = UDim2.new(1, 0, 0, 0)
+                    DropdownArrow.Text = "v"
+                end)
+                
+                OptionButton.MouseEnter:Connect(function()
+                    OptionButton.BackgroundColor3 = currentTheme.Accent
+                end)
+                
+                OptionButton.MouseLeave:Connect(function()
+                    OptionButton.BackgroundColor3 = currentTheme.Secondary
+                end)
+            end
+            
+            ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                DropdownList.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y)
+            end)
+            
+            DropdownButton.MouseButton1Click:Connect(function()
+                isOpen = not isOpen
+                PlaySound("rbxassetid://131961136")
+                
+                if isOpen then
+                    local listHeight = math.min(120, ListLayout.AbsoluteContentSize.Y)
+                    DropdownFrame.Size = UDim2.new(1, 0, 0, 35 + listHeight)
+                    DropdownList.Size = UDim2.new(1, 0, 0, listHeight)
+                    DropdownArrow.Text = "^"
+                else
+                    DropdownFrame.Size = UDim2.new(1, 0, 0, 35)
+                    DropdownList.Size = UDim2.new(1, 0, 0, 0)
+                    DropdownArrow.Text = "v"
+                end
+            end)
+        end
+        
+        function TabObject:Show()
+            -- Hide all tabs
+            for _, child in pairs(ItemContainer:GetChildren()) do
+                if child:IsA("ScrollingFrame") then
+                    child.Visible = false
+                end
+            end
+            
+            -- Reset all tab buttons
+            for _, child in pairs(TabScroll:GetChildren()) do
+                if child:IsA("TextButton") then
+                    child.BackgroundColor3 = currentTheme.Primary
+                    child.TextColor3 = currentTheme.Text
+                end
+            end
+            
+            -- Show this tab
+            TabFrame.Visible = true
+            TabButton.BackgroundColor3 = currentTheme.Accent
+            TabButton.TextColor3 = currentTheme.IsLight and currentTheme.Primary or Color3.fromRGB(255, 255, 255)
+        end
+        
+        return TabObject
     end
     
-    return InsideLibrary
+    -- Auto-update tab scroll canvas
+    TabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabScroll.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y + 10)
+    end)
+    
+    -- Make first tab active by default
+    coroutine.wrap(function()
+        wait()
+        if TabScroll:FindFirstChildOfClass("TextButton") then
+            TabScroll:FindFirstChildOfClass("TextButton"):MouseButton1Click()
+        end
+    end)()
+    
+    -- Window Methods
+    function WindowObject:ChangeTheme(themeName)
+        if Themes[themeName] then
+            currentTheme = Themes[themeName]
+            
+            -- Update all elements
+            MainFrame.BackgroundColor3 = currentTheme.Primary
+            TopBar.BackgroundColor3 = currentTheme.Secondary
+            Title.TextColor3 = currentTheme.Text
+            ToggleButton.TextColor3 = currentTheme.Text
+            TabContainer.BackgroundColor3 = currentTheme.Secondary
+            ItemContainer.BackgroundColor3 = currentTheme.Secondary
+            TabScroll.ScrollBarImageColor3 = currentTheme.Accent
+            
+            -- Update all tabs and their elements
+            for _, tabButton in pairs(TabScroll:GetChildren()) do
+                if tabButton:IsA("TextButton") then
+                    tabButton.BackgroundColor3 = currentTheme.Primary
+                    tabButton.TextColor3 = currentTheme.Text
+                    
+                    -- Find corresponding tab frame
+                    local tabName = string.gsub(tabButton.Name, "Button", "")
+                    local tabFrame = ItemContainer:FindFirstChild(tabName.."Frame")
+                    if tabFrame then
+                        tabFrame.ScrollBarImageColor3 = currentTheme.Accent
+                        
+                        -- Update all elements in the tab
+                        for _, element in pairs(tabFrame:GetDescendants()) do
+                            if element:IsA("TextButton") and element.Name == "Button" then
+                                element.BackgroundColor3 = currentTheme.Primary
+                                element.TextColor3 = currentTheme.Text
+                            elseif element:IsA("TextLabel") then
+                                element.TextColor3 = currentTheme.Text
+                            elseif element:IsA("Frame") and element.Name == "ToggleFrame" then
+                                element.BackgroundColor3 = currentTheme.Primary
+                                element:FindFirstChild("Label").TextColor3 = currentTheme.Text
+                                local toggleBtn = element:FindFirstChild("Button")
+                                if toggleBtn then
+                                    toggleBtn.BackgroundColor3 = currentTheme.Secondary
+                                end
+                            elseif element:IsA("Frame") and element.Name == "SliderFrame" then
+                                element.BackgroundColor3 = currentTheme.Primary
+                                element:FindFirstChild("Label").TextColor3 = currentTheme.Text
+                                element:FindFirstChild("ValueLabel").TextColor3 = currentTheme.Accent
+                                element:FindFirstChild("Track").BackgroundColor3 = currentTheme.Secondary
+                                element:FindFirstChild("Fill").BackgroundColor3 = currentTheme.Accent
+                            elseif element:IsA("Frame") and element.Name == "DropdownFrame" then
+                                element.BackgroundColor3 = currentTheme.Primary
+                                element:FindFirstChild("Button"):FindFirstChild("Label").TextColor3 = currentTheme.Text
+                                element:FindFirstChild("Button"):FindFirstChild("Arrow").TextColor3 = currentTheme.Accent
+                            end
+                        end
+                    end
+                end
+            end
+            
+            -- Update the currently active tab button
+            for _, tabButton in pairs(TabScroll:GetChildren()) do
+                if tabButton:IsA("TextButton") and tabButton.BackgroundColor3 == currentTheme.Accent then
+                    tabButton.TextColor3 = currentTheme.IsLight and currentTheme.Primary or Color3.fromRGB(255, 255, 255)
+                end
+            end
+        end
+    end
+    
+    function WindowObject:SetPosition(position)
+        MainFrame.Position = position
+    end
+    
+    function WindowObject:SetSize(size)
+        MainFrame.Size = size
+    end
+    
+    function WindowObject:Toggle()
+        ToggleButton:MouseButton1Click()
+    end
+    
+    function WindowObject:Destroy()
+        ScreenGui:Destroy()
+    end
+    
+    return WindowObject
 end
 
-return library
+return Library
