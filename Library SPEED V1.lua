@@ -327,17 +327,25 @@ TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     
     local LabelFrame = Instance.new("Frame")
     local Label = Instance.new("TextLabel")
+    local Padding = Instance.new("UIPadding")
     
     LabelFrame.Name = "LabelFrame"
     LabelFrame.Parent = TabFrame
-    LabelFrame.BackgroundTransparency = 1
+    LabelFrame.BackgroundColor3 = currentTheme.Primary
     LabelFrame.BorderSizePixel = 0
-    LabelFrame.Size = UDim2.new(1, -30, 0, 0)
+    LabelFrame.Size = UDim2.new(1, 0, 0, 35)
+    
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 4)
+    Corner.Parent = LabelFrame
+    
+    Padding.Parent = LabelFrame
+    Padding.PaddingLeft = UDim.new(0, 10)
     
     Label.Name = "Label"
     Label.Parent = LabelFrame
     Label.BackgroundTransparency = 1
-    Label.Size = UDim2.new(1, 0, 1, 0)
+    Label.Size = UDim2.new(1, -10, 1, 0)
     Label.Font = Enum.Font.SourceSansSemibold
     Label.Text = labelText
     Label.TextColor3 = currentTheme.Text
@@ -350,6 +358,9 @@ TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
         end,
         SetColor = function(color)
             Label.TextColor3 = color or currentTheme.Text
+        end,
+        SetBackground = function(color)
+            LabelFrame.BackgroundColor3 = color or currentTheme.Primary
         end
     }
         end
