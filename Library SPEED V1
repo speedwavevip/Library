@@ -3,7 +3,6 @@ local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local Mouse = Players.LocalPlayer:GetMouse()
 
--- Audio System
 local function PlaySound(soundId)
     for _, sound in pairs(workspace:GetChildren()) do
         if sound.Name == "LibrarySound" then
@@ -44,7 +43,7 @@ local Themes = {
     ["Ocean"] = {
         Primary = Color3.fromRGB(32, 32, 32),
         Secondary = Color3.fromRGB(26, 26, 26),
-        Accent = Color3.fromRGB(40, 81, 214),
+        Accent = Color3.fromRGB(255, 0, 0),
         Text = Color3.fromRGB(255, 255, 255),
         IsLight = false
     },
