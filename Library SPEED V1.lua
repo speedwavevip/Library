@@ -161,7 +161,7 @@ TabContainer.BackgroundColor3 = currentTheme.Secondary
 TabContainer.BorderSizePixel = 0
 TabContainer.Position = UDim2.new(0, 10, 0, 10)
 TabContainer.Size = UDim2.new(0, 140, 1, -20) 
-TabContainer.ClipsDescendants = false 
+TabContainer.ClipsDescendants = true 
 
 local TabCorner = Instance.new("UICorner")
 TabCorner.CornerRadius = UDim.new(0, 6)
