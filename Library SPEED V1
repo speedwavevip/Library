@@ -23,7 +23,7 @@ local function PlaySound(soundId)
     end)
 end
 
--- Theme Configuration
+-- Theme 
 local Themes = {
     ["Dark"] = {
         Primary = Color3.fromRGB(32, 32, 32),
@@ -32,6 +32,7 @@ local Themes = {
         Text = Color3.fromRGB(255, 255, 255),
         IsLight = false
     },
+    
     ["Blood"] = {
         Primary = Color3.fromRGB(32, 32, 32),
         Secondary = Color3.fromRGB(26, 26, 26),
@@ -39,6 +40,7 @@ local Themes = {
         Text = Color3.fromRGB(255, 255, 255),
         IsLight = false
     },
+    
     ["Ocean"] = {
         Primary = Color3.fromRGB(32, 32, 32),
         Secondary = Color3.fromRGB(26, 26, 26),
@@ -46,6 +48,7 @@ local Themes = {
         Text = Color3.fromRGB(255, 255, 255),
         IsLight = false
     },
+    
     ["Emerald"] = {
         Primary = Color3.fromRGB(32, 32, 32),
         Secondary = Color3.fromRGB(26, 26, 26),
@@ -53,6 +56,7 @@ local Themes = {
         Text = Color3.fromRGB(255, 255, 255),
         IsLight = false
     },
+    
     ["Light"] = {
         Primary = Color3.fromRGB(245, 245, 245),
         Secondary = Color3.fromRGB(255, 255, 255),
