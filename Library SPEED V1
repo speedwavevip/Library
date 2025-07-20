@@ -154,12 +154,14 @@ function Library:CreateWindow(windowName, themeName)
     ContentFrame.Size = UDim2.new(1, 0, 1, -35)
     
 TabContainer.Name = "TabContainer"
+-- Tab Container
+TabContainer.Name = "TabContainer"
 TabContainer.Parent = ContentFrame
 TabContainer.BackgroundColor3 = currentTheme.Secondary
 TabContainer.BorderSizePixel = 0
 TabContainer.Position = UDim2.new(0, 10, 0, 10)
-TabContainer.Size = UDim2.new(0, 160, 1, -20)
-TabContainer.ClipsDescendants = true 
+TabContainer.Size = UDim2.new(0, 160, 1, -20) 
+TabContainer.ClipsDescendants = false 
 
 local TabCorner = Instance.new("UICorner")
 TabCorner.CornerRadius = UDim.new(0, 6)
@@ -171,7 +173,7 @@ TabScroll.Parent = TabContainer
 TabScroll.BackgroundTransparency = 1
 TabScroll.BorderSizePixel = 0
 TabScroll.Position = UDim2.new(0, 5, 0, 5) 
-TabScroll.Size = UDim2.new(1, -10, 1, -10) 
+TabScroll.Size = UDim2.new(1, -10, 1, -10)  
 TabScroll.ScrollBarThickness = 3
 TabScroll.ScrollBarImageColor3 = currentTheme.Accent
 TabScroll.ScrollingDirection = Enum.ScrollingDirection.Y
