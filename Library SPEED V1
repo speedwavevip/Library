@@ -278,67 +278,109 @@ end)
 local InsideTab = {}
 
 function InsideTab:CreateDropdown(text, list, callback)
-    local BodyYSize = 0
-    local IsDropped = false
+
     callback = callback or function() end
     list = list or {}
     text = text or "Dropdown"
+    
+    local BodyYSize = 0
+    local IsDropped = false
+    
     local Dropdown = Instance.new("TextLabel")
-local TextButton = Instance.new("TextButton")
-local TextButton_Roundify_2px_2 = Instance.new("ImageLabel")
-local DropdownContainer = Instance.new("ImageLabel")
-local UIListLayout_2 = Instance.new("UIListLayout")
+    local ToggleButton = Instance.new("TextButton")
+    local ButtonRoundCorner = Instance.new("ImageLabel")
+    local DropdownContainer = Instance.new("ImageLabel")
+    local DropdownListLayout = Instance.new("UIListLayout")
 
-Dropdown.Name = "Dropdown"
-Dropdown.Parent = Frame
-Dropdown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Dropdown.BackgroundTransparency = 1.000
-Dropdown.Size = UDim2.new(0, 200, 0, 50)
-Dropdown.Font = Enum.Font.SourceSansSemibold
-Dropdown.Text = text
-Dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
-Dropdown.TextSize = 14.000
+    Dropdown.Name = "Dropdown"
+    Dropdown.Parent = Frame
+    Dropdown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Dropdown.BackgroundTransparency = 1.000
+    Dropdown.Size = UDim2.new(0, 200, 0, 50)
+    Dropdown.Font = Enum.Font.SourceSansSemibold
+    Dropdown.Text = text
+    Dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Dropdown.TextSize = 14.000
 
-TextButton.Parent = Dropdown
-TextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextButton.BackgroundTransparency = 1.000
-TextButton.BorderColor3 = Color3.fromRGB(27, 42, 53)
-TextButton.BorderSizePixel = 0
-TextButton.Position = UDim2.new(1, 0, 0, 0)
-TextButton.Size = UDim2.new(0, 31, 0, 27)
-TextButton.ZIndex = 2
-TextButton.Font = Enum.Font.SourceSansBold
-TextButton.Text = "+"
-TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextButton.TextSize = 14.000
+    ToggleButton.Parent = Dropdown
+    ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleButton.BackgroundTransparency = 1.000
+    ToggleButton.BorderSizePixel = 0
+    ToggleButton.Position = UDim2.new(1, 0, 0, 0)
+    ToggleButton.Size = UDim2.new(0, 31, 0, 27)
+    ToggleButton.ZIndex = 2
+    ToggleButton.Font = Enum.Font.SourceSansBold
+    ToggleButton.Text = "+"
+    ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleButton.TextSize = 14.000
 
-TextButton_Roundify_2px_2.Name = "TextButton_Roundify_2px"
-TextButton_Roundify_2px_2.Parent = TextButton
-TextButton_Roundify_2px_2.Active = true
-TextButton_Roundify_2px_2.AnchorPoint = Vector2.new(0.5, 0.5)
-TextButton_Roundify_2px_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextButton_Roundify_2px_2.BackgroundTransparency = 1.000
-TextButton_Roundify_2px_2.Position = UDim2.new(0.5, 0, 0.5, 0)
-TextButton_Roundify_2px_2.Selectable = true
-TextButton_Roundify_2px_2.Size = UDim2.new(1, 0, 1, 0)
-TextButton_Roundify_2px_2.Image = "rbxassetid://3570695787"
-TextButton_Roundify_2px_2.ImageColor3 = theme2
-TextButton_Roundify_2px_2.ScaleType = Enum.ScaleType.Slice
-TextButton_Roundify_2px_2.SliceCenter = Rect.new(100, 100, 100, 100)
-TextButton_Roundify_2px_2.SliceScale = 0.020
+    ButtonRoundCorner.Name = "TextButton_Roundify_2px"
+    ButtonRoundCorner.Parent = ToggleButton
+    ButtonRoundCorner.Active = true
+    ButtonRoundCorner.AnchorPoint = Vector2.new(0.5, 0.5)
+    ButtonRoundCorner.BackgroundTransparency = 1.000
+    ButtonRoundCorner.Position = UDim2.new(0.5, 0, 0.5, 0)
+    ButtonRoundCorner.Selectable = true
+    ButtonRoundCorner.Size = UDim2.new(1, 0, 1, 0)
+    ButtonRoundCorner.Image = "rbxassetid://3570695787"
+    ButtonRoundCorner.ImageColor3 = theme2
+    ButtonRoundCorner.ScaleType = Enum.ScaleType.Slice
+    ButtonRoundCorner.SliceCenter = Rect.new(100, 100, 100, 100)
+    ButtonRoundCorner.SliceScale = 0.020
 
-TextButton.MouseButton1Click:Connect(function()
-    play("rbxassetid://178104975")
-    if not IsDropped then
-        IsDropped = true
-        TextButton.TextColor3 = theme3
-        DropdownContainer.Visible = true
+    ToggleButton.MouseButton1Click:Connect(function()
+        play("rbxassetid://178104975")
+        IsDropped = not IsDropped
+        
+        if IsDropped then
+            ToggleButton.TextColor3 = theme3
+            DropdownContainer.Visible = true
         else
-            IsDropped = false
-            TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        DropdownContainer.Visible = false
+            ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            DropdownContainer.Visible = false
         end
     end)
+
+    DropdownContainer.Name = "DropdownContainer"
+    DropdownContainer.Parent = ToggleButton
+    DropdownContainer.BackgroundTransparency = 1.000
+    DropdownContainer.Position = UDim2.new(1.46359456, 0, 0, 0)
+    DropdownContainer.Size = UDim2.new(0, 197, 0, BodyYSize)
+    DropdownContainer.Image = "rbxassetid://3570695787"
+    DropdownContainer.ImageColor3 = theme2
+    DropdownContainer.Visible = false
+    DropdownContainer.ScaleType = Enum.ScaleType.Slice
+    DropdownContainer.SliceCenter = Rect.new(100, 100, 100, 100)
+    DropdownContainer.SliceScale = 0.020
+    DropdownContainer.ZIndex = 3
+
+    DropdownListLayout.Parent = DropdownContainer
+    DropdownListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+    for i, v in pairs(list) do
+        BodyYSize = BodyYSize + 27
+        
+        local OptionButton = Instance.new("TextButton")
+        OptionButton.Parent = DropdownContainer
+        OptionButton.BackgroundTransparency = 1.000
+        OptionButton.Size = UDim2.new(0, 197, 0, 27)
+        OptionButton.Font = Enum.Font.SourceSansSemibold
+        OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        OptionButton.Text = v
+        OptionButton.TextSize = 14.000
+        OptionButton.ZIndex = 4
+
+        OptionButton.MouseButton1Click:Connect(function()
+            Dropdown.Text = v
+            callback(v)
+            IsDropped = false
+            DropdownContainer.Visible = false
+            ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        end)
+    end
+    
+    DropdownContainer.Size = UDim2.new(0, 197, 0, BodyYSize)
+end
 
 for i,v in pairs(list) do
 BodyYSize = BodyYSize + 27
