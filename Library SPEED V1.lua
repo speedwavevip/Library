@@ -332,7 +332,7 @@ TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     LabelFrame.Parent = TabFrame
     LabelFrame.BackgroundTransparency = 1
     LabelFrame.BorderSizePixel = 0
-    LabelFrame.Size = UDim2.new(1, 0, 0, 20)
+    LabelFrame.Size = UDim2.new(1, 0, 0, 10)
     
     Label.Name = "Label"
     Label.Parent = LabelFrame
