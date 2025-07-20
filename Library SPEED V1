@@ -130,6 +130,7 @@ Main.ScaleType = Enum.ScaleType.Slice
 Main.SliceCenter = Rect.new(100, 100, 100, 100)
 Main.SliceScale = 0.030
 
+local Tabs = Instance.new("ImageLabel")
 Tabs.Name = "Tabs"
 Tabs.Parent = TabContainer
 Tabs.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -142,12 +143,54 @@ Tabs.ScaleType = Enum.ScaleType.Slice
 Tabs.SliceCenter = Rect.new(100, 100, 100, 100)
 Tabs.SliceScale = 0.020
 
-UIGridLayout.Parent = Tabs
+local ScrollTabs = Instance.new("ScrollingFrame")
+ScrollTabs.Name = "ScrollTabs"
+ScrollTabs.Parent = Tabs
+ScrollTabs.Active = true
+ScrollTabs.BackgroundTransparency = 1
+ScrollTabs.Size = UDim2.new(1, 0, 1, 0)
+ScrollTabs.ScrollBarThickness = 0
+ScrollTabs.ScrollingDirection = Enum.ScrollingDirection.Y
+
+local UIGridLayout = Instance.new("UIGridLayout")
+UIGridLayout.Parent = ScrollTabs
 UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIGridLayout.CellSize = UDim2.new(0, 119, 0, 26)
 
+local TabContainer = Instance.new("Frame")
 TabContainer.Name = "TabContainer"
 TabContainer.Parent = Main
+TabContainer.BackgroundTransparency = 1
+TabContainer.Size = UDim2.new(1, 0, 1, 0)
+
+local Dragging = false
+local DragInput, DragStart, StartPos
+
+Tabs.InputBegan:Connect(function(Input)
+    if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+        Dragging = true
+        DragStart = Input.Position
+        StartPos = Tabs.Position
+        Input.Changed:Connect(function()
+            if Input.UserInputState == Enum.UserInputState.End then
+                Dragging = false
+            end
+        end)
+    end
+end)
+
+Tabs.InputChanged:Connect(function(Input)
+    if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+        DragInput = Input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(Input)
+    if Input == DragInput and Dragging then
+        local Delta = Input.Position - DragStart
+        Tabs.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+    end
+end)
 
 Items.Name = "Items"
 Items.Parent = Main
