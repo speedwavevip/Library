@@ -321,6 +321,38 @@ TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
                 Button.BackgroundColor3 = currentTheme.Primary
             end)
         end
+
+        function TabObject:CreateLabel(labelText)
+    labelText = labelText or "Label"
+    
+    local LabelFrame = Instance.new("Frame")
+    local Label = Instance.new("TextLabel")
+    
+    LabelFrame.Name = "LabelFrame"
+    LabelFrame.Parent = TabFrame
+    LabelFrame.BackgroundTransparency = 1
+    LabelFrame.BorderSizePixel = 0
+    LabelFrame.Size = UDim2.new(1, 0, 0, 20)
+    
+    Label.Name = "Label"
+    Label.Parent = LabelFrame
+    Label.BackgroundTransparency = 1
+    Label.Size = UDim2.new(1, 0, 1, 0)
+    Label.Font = Enum.Font.SourceSansSemibold
+    Label.Text = labelText
+    Label.TextColor3 = currentTheme.Text
+    Label.TextSize = 14
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    
+    return {
+        SetText = function(newText)
+            Label.Text = newText or ""
+        end,
+        SetColor = function(color)
+            Label.TextColor3 = color or currentTheme.Text
+        end
+    }
+        end
         
         function TabObject:CreateToggle(toggleText, defaultState, callback)
             toggleText = toggleText or "Toggle"
