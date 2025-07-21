@@ -56,9 +56,9 @@ local Themes = {
         IsLight = false
     },
     
-    ["Light"] = {
-        Primary = Color3.fromRGB(245, 245, 245),
-        Secondary = Color3.fromRGB(255, 255, 255),
+    ["Red"] = {
+        Primary = Color3.fromRGB(32, 32, 32),
+        Secondary = Color3.fromRGB(26, 26, 26),
         Accent = Color3.fromRGB(255, 0, 0),
         Text = Color3.fromRGB(255, 0, 0),
         IsLight = true
