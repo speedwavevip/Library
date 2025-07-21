@@ -65,21 +65,18 @@ local Themes = {
     }
 }
 
--- Main Library Function
 function Library:CreateWindow(windowName, themeName)
     windowName = windowName or "Modern GUI"
     themeName = themeName or "Dark"
     
     local currentTheme = Themes[themeName] or Themes["Dark"]
     
-    -- Clean existing GUI
     for _, gui in pairs(game.CoreGui:GetChildren()) do
         if gui.Name == "ModernGUI" then
             gui:Destroy()
         end
     end
     
-    -- Create Main GUI Structure
     local ScreenGui = Instance.new("ScreenGui")
     local MainFrame = Instance.new("Frame")
     local TopBar = Instance.new("Frame")
@@ -91,13 +88,11 @@ function Library:CreateWindow(windowName, themeName)
     local TabLayout = Instance.new("UIListLayout")
     local ItemContainer = Instance.new("Frame")
     
-    -- Configure ScreenGui
     ScreenGui.Name = "ModernGUI"
     ScreenGui.Parent = game.CoreGui
     ScreenGui.ResetOnSpawn = false
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     
-    -- Main Frame Setup
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
     MainFrame.BackgroundColor3 = currentTheme.Primary
@@ -107,12 +102,10 @@ function Library:CreateWindow(windowName, themeName)
     MainFrame.Active = true
     MainFrame.Draggable = true
     
-    -- Add rounded corners
     local MainCorner = Instance.new("UICorner")
     MainCorner.CornerRadius = UDim.new(0, 8)
     MainCorner.Parent = MainFrame
     
-    -- Top Bar
     TopBar.Name = "TopBar"
     TopBar.Parent = MainFrame
     TopBar.BackgroundColor3 = currentTheme.Secondary
