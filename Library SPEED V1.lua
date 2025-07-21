@@ -441,9 +441,9 @@ TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
                     UpdateToggle()
                 end
             }
-        end
-        
-        function TabObject:CreateSlider(sliderText, minValue, maxValue, defaultValue, callback)
+        end        
+
+function TabObject:CreateSlider(sliderText, minValue, maxValue, defaultValue, callback)
     sliderText = sliderText or "Slider"
     minValue = minValue or 0
     maxValue = maxValue or 100
@@ -533,12 +533,11 @@ TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     
     game:GetService("UserInputService").InputChanged:Connect(function(input)
         if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local trackPos = SliderTrack.AbsolutePosition
-            local trackSize = SliderTrack.AbsoluteSize
-            local mousePos = game:GetService("UserInputService"):GetMouseLocation()
-            local percentage = math.clamp((mousePos.X - trackPos.X) / trackSize.X, 0, 1)
-            local value = minValue + (percentage * (maxValue - minValue))
-            UpdateSlider(value)
+            local posX = SliderTrack.AbsolutePosition.X
+            local sizeX = SliderTrack.AbsoluteSize.X
+            local mouseX = game:GetService("UserInputService"):GetMouseLocation().X
+            local percentage = math.clamp((mouseX - posX) / sizeX, 0, 1)
+            UpdateSlider(minValue + (percentage * (maxValue - minValue)))
         end
     end)
     
@@ -549,10 +548,8 @@ TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     end)
     
     UpdateSlider(defaultValue)
-    return SliderFrame
         end
-
-
+        
         function TabObject:CreateDropdown(dropdownText, options, callback)
             dropdownText = dropdownText or "Dropdown"
             options = options or {}
