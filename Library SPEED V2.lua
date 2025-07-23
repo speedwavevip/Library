@@ -205,6 +205,7 @@ function Library:CreateWindow(windowName, themeName)
         local TabButton = Instance.new("TextButton")
         local TabFrame = Instance.new("ScrollingFrame")
         local ItemLayout = Instance.new("UIListLayout")
+        local IconLabel = Instance.new("TextLabel")
         
         TabButton.Name = tabName .. "Button"
         TabButton.Parent = TabScroll
@@ -219,7 +220,33 @@ function Library:CreateWindow(windowName, themeName)
         local ButtonCorner = Instance.new("UICorner")
         ButtonCorner.CornerRadius = UDim.new(0, 4)
         ButtonCorner.Parent = TabButton
-        
+
+        -- Is By Icon
+        if icon then
+            IconLabel.Name = "Icon"
+            IconLabel.Parent = TabButton
+            IconLabel.BackgroundTransparency = 1
+            IconLabel.Position = UDim2.new(0, 10, 0, 0)
+            IconLabel.Size = UDim2.new(0, 20, 1, 0)
+            IconLabel.Font = Enum.Font.FontAwesome
+            IconLabel.Text = icon
+            IconLabel.TextColor3 = currentTheme.Text
+            IconLabel.TextSize = 1
+            IconLabel.TextXAlignment = Enum.TextXAlignment.Left
+        end
+
+        local TabText = Instance.new("TextLabel")
+    TabText.Name = "TabText"
+    TabText.Parent = TabButton
+    TabText.BackgroundTransparency = 1
+    TabText.Position = UDim2.new(0, icon and 35 or 10, 0, 0)
+    TabText.Size = UDim2.new(1, icon and -40 or -20, 1, 0)
+    TabText.Font = Enum.Font.SourceSansSemibold
+    TabText.Text = tabName
+    TabText.TextColor3 = currentTheme.Text
+    TabText.TextSize = 14
+    TabText.TextXAlignment = Enum.TextXAlignment.Left
+    end
         TabFrame.Name = tabName .. "Frame"
         TabFrame.Parent = ItemContainer
         TabFrame.BackgroundTransparency = 1
