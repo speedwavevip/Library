@@ -7,7 +7,7 @@ local Mouse = Players.LocalPlayer:GetMouse()
 
 local function PlaySound(soundId)
     for _, sound in pairs(workspace:GetChildren()) do
-        if sound.Name == "LibrarySound" then -- Soon
+        if sound.Name == "LibrarySound" then
             sound:Destroy()
         end
     end
@@ -54,7 +54,6 @@ function Library:CreateWindow(windowName)
     local TabScroll = Instance.new("ScrollingFrame")
     local TabLayout = Instance.new("UIListLayout")
     local ItemContainer = Instance.new("Frame")
-    local Discord = Instance.new("TextButton")
     
     ScreenGui.Name = "CleanUI"
     ScreenGui.Parent = game.CoreGui
@@ -203,68 +202,83 @@ function Library:CreateWindow(windowName)
             }
         end
 
-        Discord.Name = "Discord"
-    Discord.Parent = Body
-    Discord.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Discord.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Discord.BorderSizePixel = 0
-    Discord.Position = UDim2.new(0, 5, 0, 320)
-    Discord.Size = UDim2.new(0, 85, 0, 25)
-    Discord.AutoButtonColor = false
-    Discord.Font = Enum.Font.SourceSans
-    Discord.Text = ""
-    Discord.TextColor3 = Color3.fromRGB(0, 0, 0)
-    Discord.TextSize = 14.000
-
-    UICorner.CornerRadius = UDim.new(0, 5)
-    UICorner.Parent = Discord
-
-    Disc_Logo.Name = "Disc_Logo"
-    Disc_Logo.Parent = Discord
-    Disc_Logo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Disc_Logo.BackgroundTransparency = 1.000
-    Disc_Logo.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Disc_Logo.BorderSizePixel = 0
-    Disc_Logo.Position = UDim2.new(0, 5, 0, 1)
-    Disc_Logo.Size = UDim2.new(0, 23, 0, 23)
-    Disc_Logo.Image = "http://www.roblox.com/asset/?id=12058969086"
-
-    Disc_Title.Name = "Disc_Title"
-    Disc_Title.Parent = Discord
-    Disc_Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Disc_Title.BackgroundTransparency = 1.000
-    Disc_Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Disc_Title.BorderSizePixel = 0
-    Disc_Title.Position = UDim2.new(0, 35, 0, 0)
-    Disc_Title.Size = UDim2.new(0, 40, 0, 25)
-    Disc_Title.Font = Enum.Font.SourceSansSemibold
-    Disc_Title.Text = "Discord"
-    Disc_Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Disc_Title.TextSize = 14.000
-    Disc_Title.TextXAlignment = Enum.TextXAlignment.Left
-
-    Discord.MouseEnter:Connect(function()
-        utility:Tween(Discord, {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}, .15)
-        utility:Tween(Disc_Logo, {ImageTransparency = 0.7}, .15)
-        utility:Tween(Disc_Title, {TextTransparency = 0.7}, .15)
-    end)
-
-    Discord.MouseLeave:connect(function()
-        utility:Tween(Discord, {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}, .15)
-        utility:Tween(Disc_Logo, {ImageTransparency = 0}, .15)
-        utility:Tween(Disc_Title, {TextTransparency = 0}, .15)
-    end)
-
-    Discord.MouseButton1Click:Connect(function()
-        (setclipboard or toclipboard)("https://discord.gg/SPEEDWAVE")
-        wait(.1)
-        game:GetService("StarterGui"):SetCore("SendNotification",{
-            Title = "Discord",
-            Text = "Discord copied on your clipboard",
-            Button1 = "Okay",
-            Duration = 20
-        })
-    end)
+        function TabObject:CreateDiscordButton()
+            local Discord = Instance.new("TextButton")
+            local UICorner = Instance.new("UICorner")
+            local Disc_Logo = Instance.new("ImageLabel")
+            local Disc_Title = Instance.new("TextLabel")
+            
+            Discord.Name = "Discord"
+            Discord.Parent = TabFrame
+            Discord.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Discord.BorderSizePixel = 0
+            Discord.Position = UDim2.new(0, 0, 0, 0)
+            Discord.Size = UDim2.new(0, 120, 0, 30)
+            Discord.AutoButtonColor = false
+            Discord.Text = ""
+            
+            UICorner.CornerRadius = UDim.new(0, 5)
+            UICorner.Parent = Discord
+            
+            Disc_Logo.Name = "Disc_Logo"
+            Disc_Logo.Parent = Discord
+            Disc_Logo.BackgroundTransparency = 1
+            Disc_Logo.Position = UDim2.new(0, 5, 0.5, -10)
+            Disc_Logo.Size = UDim2.new(0, 20, 0, 20)
+            Disc_Logo.Image = "http://www.roblox.com/asset/?id=12058969086"
+            
+            Disc_Title.Name = "Disc_Title"
+            Disc_Title.Parent = Discord
+            Disc_Title.BackgroundTransparency = 1
+            Disc_Title.Position = UDim2.new(0, 30, 0, 0)
+            Disc_Title.Size = UDim2.new(0, 80, 1, 0)
+            Disc_Title.Font = Enum.Font.SourceSansSemibold
+            Disc_Title.Text = "Discord"
+            Disc_Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Disc_Title.TextSize = 14
+            Disc_Title.TextXAlignment = Enum.TextXAlignment.Left
+            
+            Discord.MouseEnter:Connect(function()
+                TweenService:Create(Discord, TweenInfo.new(0.15), {
+                    BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                }):Play()
+                TweenService:Create(Disc_Logo, TweenInfo.new(0.15), {
+                    ImageTransparency = 0.7
+                }):Play()
+                TweenService:Create(Disc_Title, TweenInfo.new(0.15), {
+                    TextTransparency = 0.7
+                }):Play()
+            end)
+            
+            Discord.MouseLeave:Connect(function()
+                TweenService:Create(Discord, TweenInfo.new(0.15), {
+                    BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                }):Play()
+                TweenService:Create(Disc_Logo, TweenInfo.new(0.15), {
+                    ImageTransparency = 0
+                }):Play()
+                TweenService:Create(Disc_Title, TweenInfo.new(0.15), {
+                    TextTransparency = 0
+                }):Play()
+            end)
+            
+            Discord.MouseButton1Click:Connect(function()
+                if setclipboard then
+                    setclipboard("https://discord.gg/SPEEDWAVE")
+                elseif toclipboard then
+                    toclipboard("https://discord.gg/SPEEDWAVE")
+                end
+                
+                game:GetService("StarterGui"):SetCore("SendNotification", {
+                    Title = "Discord",
+                    Text = "Discord link copied to clipboard",
+                    Button1 = "Okay",
+                    Duration = 5
+                })
+            end)
+            
+            return Discord
+        end
         
         function TabObject:CreateToggle(toggleText, defaultState, callback)
             toggleText = toggleText or "Toggle"
