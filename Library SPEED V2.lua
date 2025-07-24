@@ -281,74 +281,119 @@ function Library:CreateWindow(windowName)
         end
         
         function TabObject:CreateToggle(toggleText, defaultState, callback)
-            toggleText = toggleText or "Toggle"
-            defaultState = defaultState or false
-            callback = callback or function() end
             
-            local ToggleFrame = Instance.new("Frame")
-            local ToggleLabel = Instance.new("TextLabel")
-            local ToggleButton = Instance.new("TextButton")
-            local ToggleIndicator = Instance.new("Frame")
-            
-            ToggleFrame.Name = "ToggleFrame"
-            ToggleFrame.Parent = TabFrame
-            ToggleFrame.BackgroundColor3 = currentTheme.Primary
-            ToggleFrame.Size = UDim2.new(1, 0, 0, 35)
-            
-            ToggleLabel.Name = "Label"
-            ToggleLabel.Parent = ToggleFrame
-            ToggleLabel.BackgroundTransparency = 1
-            ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
-            ToggleLabel.Size = UDim2.new(0, 200, 1, 0)
-            ToggleLabel.Font = Enum.Font.SourceSansSemibold
-            ToggleLabel.Text = toggleText
-            ToggleLabel.TextColor3 = currentTheme.Text
-            ToggleLabel.TextSize = 14
-            ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-            
-            ToggleButton.Name = "ToggleButton"
-            ToggleButton.Parent = ToggleFrame
-            ToggleButton.BackgroundColor3 = currentTheme.Secondary
-            ToggleButton.Position = UDim2.new(1, -50, 0.5, -10)
-            ToggleButton.Size = UDim2.new(0, 40, 0, 20)
-            ToggleButton.Text = ""
-            
-            ToggleIndicator.Name = "Indicator"
-            ToggleIndicator.Parent = ToggleButton
-            ToggleIndicator.BackgroundColor3 = currentTheme.Text
-            ToggleIndicator.Position = defaultState and UDim2.new(0, 22, 0, 2) or UDim2.new(0, 2, 0, 2)
-            ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
-            
-            local function updateToggle(state)
-                if state then
-                    TweenService:Create(ToggleIndicator, TweenInfo.new(0.1), {
-                        Position = UDim2.new(0, 22, 0, 2),
-                        BackgroundColor3 = currentTheme.Accent
-                    }):Play()
-                else
-                    TweenService:Create(ToggleIndicator, TweenInfo.new(0.1), {
-                        Position = UDim2.new(0, 2, 0, 2),
-                        BackgroundColor3 = currentTheme.Text
-                    }):Play()
-                end
-                pcall(callback, state)
-            end
-            
-            ToggleButton.MouseButton1Click:Connect(function()
-                defaultState = not defaultState
-                updateToggle(defaultState)
-            end)
-            
-            return {
-                SetState = function(state)
-                    defaultState = state
-                    updateToggle(state)
-                end,
-                GetState = function()
-                    return defaultState
-                end
-            }
+    toggleText = toggleText or "Toggle"
+    defaultState = defaultState or false
+    callback = callback or function() end
+    
+    local ToggleFrame = Instance.new("Frame")
+    local ToggleLabel = Instance.new("TextLabel")
+    local ToggleButton = Instance.new("TextButton")
+    local ToggleIndicator = Instance.new("Frame")
+    local UICorner = Instance.new("UICorner") 
+    
+    ToggleFrame.Name = "ToggleFrame"
+    ToggleFrame.Parent = TabFrame
+    ToggleFrame.BackgroundColor3 = currentTheme.Primary
+    ToggleFrame.Size = UDim2.new(1, 0, 0, 35)
+    
+    ToggleLabel.Name = "Label"
+    ToggleLabel.Parent = ToggleFrame
+    ToggleLabel.BackgroundTransparency = 1
+    ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
+    ToggleLabel.Size = UDim2.new(0, 200, 1, 0)
+    ToggleLabel.Font = Enum.Font.SourceSansSemibold
+    ToggleLabel.Text = toggleText
+    ToggleLabel.TextColor3 = currentTheme.Text
+    ToggleLabel.TextSize = 14
+    ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    ToggleButton.Name = "ToggleButton"
+    ToggleButton.Parent = ToggleFrame
+    ToggleButton.BackgroundColor3 = currentTheme.Secondary
+    ToggleButton.Position = UDim2.new(1, -50, 0.5, -10)
+    ToggleButton.Size = UDim2.new(0, 40, 0, 20)
+    ToggleButton.Text = ""
+    ToggleButton.AutoButtonColor = false  
+    
+    UICorner.Parent = ToggleButton
+    UICorner.CornerRadius = UDim.new(1, 0)  
+    
+    ToggleIndicator.Name = "Indicator"
+    ToggleIndicator.Parent = ToggleButton
+    ToggleIndicator.BackgroundColor3 = currentTheme.Text
+    ToggleIndicator.Position = defaultState and UDim2.new(0, 22, 0, 2) or UDim2.new(0, 2, 0, 2)
+    ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
+    
+    local IndicatorCorner = Instance.new("UICorner")
+    IndicatorCorner.Parent = ToggleIndicator
+    IndicatorCorner.CornerRadius = UDim.new(1, 0)
+    
+    ToggleButton.MouseEnter:Connect(function()
+        TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+            BackgroundColor3 = Color3.fromRGB(
+                currentTheme.Secondary.R * 255 * 0.9,
+                currentTheme.Secondary.G * 255 * 0.9,
+                currentTheme.Secondary.B * 255 * 0.9
+            )
+        }):Play()
+    end)
+    
+    ToggleButton.MouseLeave:Connect(function()
+        TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+            BackgroundColor3 = currentTheme.Secondary
+        }):Play()
+    end)
+    
+    local function updateToggle(state)
+        if state then
+            TweenService:Create(ToggleIndicator, TweenInfo.new(0.1), {
+                Position = UDim2.new(0, 22, 0, 2),
+                BackgroundColor3 = currentTheme.Accent
+            }):Play()
+            TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+                BackgroundColor3 = currentTheme.Accent
+            }):Play()
+        else
+            TweenService:Create(ToggleIndicator, TweenInfo.new(0.1), {
+                Position = UDim2.new(0, 2, 0, 2),
+                BackgroundColor3 = currentTheme.Text
+            }):Play()
+            TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+                BackgroundColor3 = currentTheme.Secondary
+            }):Play()
         end
+        pcall(callback, state)
+    end
+    
+    ToggleButton.MouseButton1Click:Connect(function()
+        defaultState = not defaultState
+        updateToggle(defaultState)
+    end)
+    
+    updateToggle(defaultState)
+    
+    return {
+        SetState = function(self, state)
+            if defaultState ~= state then
+                defaultState = state
+                updateToggle(state)
+            end
+        end,
+        
+        GetState = function(self)
+            return defaultState
+        end,
+        
+        SetText = function(self, newText)
+            ToggleLabel.Text = newText or toggleText
+        end,
+        
+        Destroy = function(self)
+            ToggleFrame:Destroy()
+        end
+    }
+end
         
         if #TabScroll:GetChildren() == 1 then
             TabButton:Fire("MouseButton1Click")
