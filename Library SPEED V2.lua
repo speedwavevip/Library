@@ -4,6 +4,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local Mouse = Players.LocalPlayer:GetMouse()
+local RunService = game:GetService("RunService")
 
 local function PlaySound(soundId)
     for _, sound in pairs(workspace:GetChildren()) do
@@ -29,8 +30,8 @@ local Themes = {
     ["Dark"] = {
         Primary = Color3.fromRGB(32, 32, 32),
         Secondary = Color3.fromRGB(26, 26, 26), 
-        Accent = Color3.fromRGB(176, 148, 255),
-        Text = Color3.fromRGB(255, 255, 255),
+        Accent = Color3.fromRGB(255, 0, 0),
+        Text = Color3.fromRGB(255, 0, 0),
         IsLight = false
     }
 }
@@ -54,6 +55,13 @@ function Library:CreateWindow(windowName)
     local TabScroll = Instance.new("ScrollingFrame")
     local TabLayout = Instance.new("UIListLayout")
     local ItemContainer = Instance.new("Frame")
+    
+    -- Player Info Section
+    local PlayerInfoFrame = Instance.new("Frame")
+    local PlayerAvatar = Instance.new("ImageLabel")
+    local PlayerName = Instance.new("TextLabel")
+    local FPSLabel = Instance.new("TextLabel")
+    local PingLabel = Instance.new("TextLabel")
     
     ScreenGui.Name = "CleanUI"
     ScreenGui.Parent = game.CoreGui
@@ -121,6 +129,88 @@ function Library:CreateWindow(windowName)
     ItemContainer.BackgroundColor3 = currentTheme.Secondary
     ItemContainer.Position = UDim2.new(0, 170, 0, 10)
     ItemContainer.Size = UDim2.new(1, -180, 1, -20)
+    
+    PlayerInfoFrame.Name = "PlayerInfoFrame"
+    PlayerInfoFrame.Parent = ItemContainer
+    PlayerInfoFrame.BackgroundTransparency = 1
+    PlayerInfoFrame.Size = UDim2.new(1, -20, 0, 80)
+    PlayerInfoFrame.Position = UDim2.new(0, 10, 0, 10)
+    
+    PlayerAvatar.Name = "PlayerAvatar"
+    PlayerAvatar.Parent = PlayerInfoFrame
+    PlayerAvatar.BackgroundColor3 = currentTheme.Primary
+    PlayerAvatar.Size = UDim2.new(0, 50, 0, 50)
+    PlayerAvatar.Position = UDim2.new(0, 0, 0, 0)
+    
+    local AvatarCorner = Instance.new("UICorner")
+    AvatarCorner.CornerRadius = UDim.new(1, 0)
+    AvatarCorner.Parent = PlayerAvatar
+    
+    PlayerName.Name = "PlayerName"
+    PlayerName.Parent = PlayerInfoFrame
+    PlayerName.BackgroundTransparency = 1
+    PlayerName.Position = UDim2.new(0, 60, 0, 5)
+    PlayerName.Size = UDim2.new(1, -60, 0, 20)
+    PlayerName.Font = Enum.Font.SourceSansSemibold
+    PlayerName.Text = "Player: " .. Players.LocalPlayer.Name
+    PlayerName.TextColor3 = currentTheme.Text
+    PlayerName.TextSize = 16
+    PlayerName.TextXAlignment = Enum.TextXAlignment.Left
+    
+    FPSLabel.Name = "FPSLabel"
+    FPSLabel.Parent = PlayerInfoFrame
+    FPSLabel.BackgroundTransparency = 1
+    FPSLabel.Position = UDim2.new(0, 60, 0, 30)
+    FPSLabel.Size = UDim2.new(1, -60, 0, 20)
+    FPSLabel.Font = Enum.Font.SourceSansSemibold
+    FPSLabel.Text = "FPS: Calculating..."
+    FPSLabel.TextColor3 = currentTheme.Text
+    FPSLabel.TextSize = 14
+    FPSLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    PingLabel.Name = "PingLabel"
+    PingLabel.Parent = PlayerInfoFrame
+    PingLabel.BackgroundTransparency = 1
+    PingLabel.Position = UDim2.new(0, 60, 0, 50)
+    PingLabel.Size = UDim2.new(1, -60, 0, 20)
+    PingLabel.Font = Enum.Font.SourceSansSemibold
+    PingLabel.Text = "Ping: Calculating..."
+    PingLabel.TextColor3 = currentTheme.Text
+    PingLabel.TextSize = 14
+    PingLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local userId = Players.LocalPlayer.UserId
+    local thumbType = Enum.ThumbnailType.HeadShot
+    local thumbSize = Enum.ThumbnailSize.Size420x420
+    local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+    
+    PlayerAvatar.Image = content
+    
+    local fps = 0
+    local fpsCount = 0
+    local fpsTime = 0
+    
+    RunService.Heartbeat:Connect(function(deltaTime)
+        fpsTime = fpsTime + deltaTime
+        fpsCount = fpsCount + 1
+        
+        if fpsTime >= 1 then
+            fps = math.floor(fpsCount / fpsTime)
+            fpsCount = 0
+            fpsTime = 0
+            FPSLabel.Text = "FPS: " .. fps
+        end
+    end)
+    
+    local function getPing()
+        return math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
+    end
+    
+    spawn(function()
+        while wait(1) do
+            PingLabel.Text = "Ping: " .. getPing() .. "ms"
+        end
+    end)
     
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
@@ -281,119 +371,118 @@ function Library:CreateWindow(windowName)
         end
         
         function TabObject:CreateToggle(toggleText, defaultState, callback)
+            toggleText = toggleText or "Toggle"
+            defaultState = defaultState or false
+            callback = callback or function() end
             
-    toggleText = toggleText or "Toggle"
-    defaultState = defaultState or false
-    callback = callback or function() end
-    
-    local ToggleFrame = Instance.new("Frame")
-    local ToggleLabel = Instance.new("TextLabel")
-    local ToggleButton = Instance.new("TextButton")
-    local ToggleIndicator = Instance.new("Frame")
-    local UICorner = Instance.new("UICorner") 
-    
-    ToggleFrame.Name = "ToggleFrame"
-    ToggleFrame.Parent = TabFrame
-    ToggleFrame.BackgroundColor3 = currentTheme.Primary
-    ToggleFrame.Size = UDim2.new(1, 0, 0, 35)
-    
-    ToggleLabel.Name = "Label"
-    ToggleLabel.Parent = ToggleFrame
-    ToggleLabel.BackgroundTransparency = 1
-    ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
-    ToggleLabel.Size = UDim2.new(0, 200, 1, 0)
-    ToggleLabel.Font = Enum.Font.SourceSansSemibold
-    ToggleLabel.Text = toggleText
-    ToggleLabel.TextColor3 = currentTheme.Text
-    ToggleLabel.TextSize = 14
-    ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    
-    ToggleButton.Name = "ToggleButton"
-    ToggleButton.Parent = ToggleFrame
-    ToggleButton.BackgroundColor3 = currentTheme.Secondary
-    ToggleButton.Position = UDim2.new(1, -50, 0.5, -10)
-    ToggleButton.Size = UDim2.new(0, 40, 0, 20)
-    ToggleButton.Text = ""
-    ToggleButton.AutoButtonColor = false  
-    
-    UICorner.Parent = ToggleButton
-    UICorner.CornerRadius = UDim.new(1, 0)  
-    
-    ToggleIndicator.Name = "Indicator"
-    ToggleIndicator.Parent = ToggleButton
-    ToggleIndicator.BackgroundColor3 = currentTheme.Text
-    ToggleIndicator.Position = defaultState and UDim2.new(0, 22, 0, 2) or UDim2.new(0, 2, 0, 2)
-    ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
-    
-    local IndicatorCorner = Instance.new("UICorner")
-    IndicatorCorner.Parent = ToggleIndicator
-    IndicatorCorner.CornerRadius = UDim.new(1, 0)
-    
-    ToggleButton.MouseEnter:Connect(function()
-        TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
-            BackgroundColor3 = Color3.fromRGB(
-                currentTheme.Secondary.R * 255 * 0.9,
-                currentTheme.Secondary.G * 255 * 0.9,
-                currentTheme.Secondary.B * 255 * 0.9
-            )
-        }):Play()
-    end)
-    
-    ToggleButton.MouseLeave:Connect(function()
-        TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
-            BackgroundColor3 = currentTheme.Secondary
-        }):Play()
-    end)
-    
-    local function updateToggle(state)
-        if state then
-            TweenService:Create(ToggleIndicator, TweenInfo.new(0.1), {
-                Position = UDim2.new(0, 22, 0, 2),
-                BackgroundColor3 = currentTheme.Accent
-            }):Play()
-            TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
-                BackgroundColor3 = currentTheme.Accent
-            }):Play()
-        else
-            TweenService:Create(ToggleIndicator, TweenInfo.new(0.1), {
-                Position = UDim2.new(0, 2, 0, 2),
-                BackgroundColor3 = currentTheme.Text
-            }):Play()
-            TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
-                BackgroundColor3 = currentTheme.Secondary
-            }):Play()
-        end
-        pcall(callback, state)
-    end
-    
-    ToggleButton.MouseButton1Click:Connect(function()
-        defaultState = not defaultState
-        updateToggle(defaultState)
-    end)
-    
-    updateToggle(defaultState)
-    
-    return {
-        SetState = function(self, state)
-            if defaultState ~= state then
-                defaultState = state
-                updateToggle(state)
+            local ToggleFrame = Instance.new("Frame")
+            local ToggleLabel = Instance.new("TextLabel")
+            local ToggleButton = Instance.new("TextButton")
+            local ToggleIndicator = Instance.new("Frame")
+            local UICorner = Instance.new("UICorner") 
+            
+            ToggleFrame.Name = "ToggleFrame"
+            ToggleFrame.Parent = TabFrame
+            ToggleFrame.BackgroundColor3 = currentTheme.Primary
+            ToggleFrame.Size = UDim2.new(1, 0, 0, 35)
+            
+            ToggleLabel.Name = "Label"
+            ToggleLabel.Parent = ToggleFrame
+            ToggleLabel.BackgroundTransparency = 1
+            ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
+            ToggleLabel.Size = UDim2.new(0, 200, 1, 0)
+            ToggleLabel.Font = Enum.Font.SourceSansSemibold
+            ToggleLabel.Text = toggleText
+            ToggleLabel.TextColor3 = currentTheme.Text
+            ToggleLabel.TextSize = 14
+            ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            
+            ToggleButton.Name = "ToggleButton"
+            ToggleButton.Parent = ToggleFrame
+            ToggleButton.BackgroundColor3 = currentTheme.Secondary
+            ToggleButton.Position = UDim2.new(1, -50, 0.5, -10)
+            ToggleButton.Size = UDim2.new(0, 40, 0, 20)
+            ToggleButton.Text = ""
+            ToggleButton.AutoButtonColor = false  
+            
+            UICorner.Parent = ToggleButton
+            UICorner.CornerRadius = UDim.new(1, 0)  
+            
+            ToggleIndicator.Name = "Indicator"
+            ToggleIndicator.Parent = ToggleButton
+            ToggleIndicator.BackgroundColor3 = currentTheme.Text
+            ToggleIndicator.Position = defaultState and UDim2.new(0, 22, 0, 2) or UDim2.new(0, 2, 0, 2)
+            ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
+            
+            local IndicatorCorner = Instance.new("UICorner")
+            IndicatorCorner.Parent = ToggleIndicator
+            IndicatorCorner.CornerRadius = UDim.new(1, 0)
+            
+            ToggleButton.MouseEnter:Connect(function()
+                TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+                    BackgroundColor3 = Color3.fromRGB(
+                        currentTheme.Secondary.R * 255 * 0.9,
+                        currentTheme.Secondary.G * 255 * 0.9,
+                        currentTheme.Secondary.B * 255 * 0.9
+                    )
+                }):Play()
+            end)
+            
+            ToggleButton.MouseLeave:Connect(function()
+                TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+                    BackgroundColor3 = currentTheme.Secondary
+                }):Play()
+            end)
+            
+            local function updateToggle(state)
+                if state then
+                    TweenService:Create(ToggleIndicator, TweenInfo.new(0.1), {
+                        Position = UDim2.new(0, 22, 0, 2),
+                        BackgroundColor3 = currentTheme.Accent
+                    }):Play()
+                    TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+                        BackgroundColor3 = currentTheme.Accent
+                    }):Play()
+                else
+                    TweenService:Create(ToggleIndicator, TweenInfo.new(0.1), {
+                        Position = UDim2.new(0, 2, 0, 2),
+                        BackgroundColor3 = currentTheme.Text
+                    }):Play()
+                    TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+                        BackgroundColor3 = currentTheme.Secondary
+                    }):Play()
+                end
+                pcall(callback, state)
             end
-        end,
-        
-        GetState = function(self)
-            return defaultState
-        end,
-        
-        SetText = function(self, newText)
-            ToggleLabel.Text = newText or toggleText
-        end,
-        
-        Destroy = function(self)
-            ToggleFrame:Destroy()
+            
+            ToggleButton.MouseButton1Click:Connect(function()
+                defaultState = not defaultState
+                updateToggle(defaultState)
+            end)
+            
+            updateToggle(defaultState)
+            
+            return {
+                SetState = function(self, state)
+                    if defaultState ~= state then
+                        defaultState = state
+                        updateToggle(state)
+                    end
+                end,
+                
+                GetState = function(self)
+                    return defaultState
+                end,
+                
+                SetText = function(self, newText)
+                    ToggleLabel.Text = newText or toggleText
+                end,
+                
+                Destroy = function(self)
+                    ToggleFrame:Destroy()
+                end
+            }
         end
-    }
-end
         
         if #TabScroll:GetChildren() == 1 then
             TabButton:Fire("MouseButton1Click")
