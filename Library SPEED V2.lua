@@ -56,6 +56,13 @@ function Library:CreateWindow(windowName)
     local TabLayout = Instance.new("UIListLayout")
     local ItemContainer = Instance.new("Frame")
     
+    -- Player Info Section (only for first tab)
+    local PlayerInfoFrame = Instance.new("Frame")
+    local PlayerAvatar = Instance.new("ImageLabel")
+    local PlayerName = Instance.new("TextLabel")
+    local FPSLabel = Instance.new("TextLabel")
+    local PingLabel = Instance.new("TextLabel")
+    
     ScreenGui.Name = "CleanUI"
     ScreenGui.Parent = game.CoreGui
     ScreenGui.ResetOnSpawn = false
@@ -123,11 +130,103 @@ function Library:CreateWindow(windowName)
     ItemContainer.Position = UDim2.new(0, 170, 0, 10)
     ItemContainer.Size = UDim2.new(1, -180, 1, -20)
     
+    -- Player Info Frame (only for first tab)
+    PlayerInfoFrame.Name = "PlayerInfoFrame"
+    PlayerInfoFrame.Parent = ItemContainer
+    PlayerInfoFrame.BackgroundTransparency = 1
+    PlayerInfoFrame.Size = UDim2.new(1, -20, 0, 80)
+    PlayerInfoFrame.Position = UDim2.new(0, 10, 0, 10)
+    
+    -- Player Avatar
+    PlayerAvatar.Name = "PlayerAvatar"
+    PlayerAvatar.Parent = PlayerInfoFrame
+    PlayerAvatar.BackgroundColor3 = currentTheme.Primary
+    PlayerAvatar.Size = UDim2.new(0, 50, 0, 50)
+    PlayerAvatar.Position = UDim2.new(0, 0, 0, 0)
+    
+    -- Add rounded corners to avatar
+    local AvatarCorner = Instance.new("UICorner")
+    AvatarCorner.CornerRadius = UDim.new(1, 0)
+    AvatarCorner.Parent = PlayerAvatar
+    
+    -- Player Name
+    PlayerName.Name = "PlayerName"
+    PlayerName.Parent = PlayerInfoFrame
+    PlayerName.BackgroundTransparency = 1
+    PlayerName.Position = UDim2.new(0, 60, 0, 5)
+    PlayerName.Size = UDim2.new(1, -60, 0, 20)
+    PlayerName.Font = Enum.Font.SourceSansSemibold
+    PlayerName.Text = "Player: " .. Players.LocalPlayer.Name
+    PlayerName.TextColor3 = currentTheme.Text
+    PlayerName.TextSize = 16
+    PlayerName.TextXAlignment = Enum.TextXAlignment.Left
+    
+    -- FPS Label
+    FPSLabel.Name = "FPSLabel"
+    FPSLabel.Parent = PlayerInfoFrame
+    FPSLabel.BackgroundTransparency = 1
+    FPSLabel.Position = UDim2.new(0, 60, 0, 30)
+    FPSLabel.Size = UDim2.new(1, -60, 0, 20)
+    FPSLabel.Font = Enum.Font.SourceSansSemibold
+    FPSLabel.Text = "FPS: Calculating..."
+    FPSLabel.TextColor3 = currentTheme.Text
+    FPSLabel.TextSize = 14
+    FPSLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    -- Ping Label
+    PingLabel.Name = "PingLabel"
+    PingLabel.Parent = PlayerInfoFrame
+    PingLabel.BackgroundTransparency = 1
+    PingLabel.Position = UDim2.new(0, 60, 0, 50)
+    PingLabel.Size = UDim2.new(1, -60, 0, 20)
+    PingLabel.Font = Enum.Font.SourceSansSemibold
+    PingLabel.Text = "Ping: Calculating..."
+    PingLabel.TextColor3 = currentTheme.Text
+    PingLabel.TextSize = 14
+    PingLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    -- Load player avatar
+    local userId = Players.LocalPlayer.UserId
+    local thumbType = Enum.ThumbnailType.HeadShot
+    local thumbSize = Enum.ThumbnailSize.Size420x420
+    local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+    
+    PlayerAvatar.Image = content
+    
+    -- FPS Counter
+    local fps = 0
+    local fpsCount = 0
+    local fpsTime = 0
+    
+    RunService.Heartbeat:Connect(function(deltaTime)
+        fpsTime = fpsTime + deltaTime
+        fpsCount = fpsCount + 1
+        
+        if fpsTime >= 1 then
+            fps = math.floor(fpsCount / fpsTime)
+            fpsCount = 0
+            fpsTime = 0
+            FPSLabel.Text = "FPS: " .. fps
+        end
+    end)
+    
+    -- Ping Counter
+    local function getPing()
+        return math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
+    end
+    
+    spawn(function()
+        while wait(1) do
+            PingLabel.Text = "Ping: " .. getPing() .. "ms"
+        end
+    end)
+    
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
     end)
     
     local WindowObject = {}
+    local isFirstTab = true
     
     function WindowObject:CreateTab(tabName)
         tabName = tabName or "Tab"
@@ -136,12 +235,6 @@ function Library:CreateWindow(windowName)
         local TabFrame = Instance.new("ScrollingFrame")
         local TabText = Instance.new("TextLabel")
         local ItemLayout = Instance.new("UIListLayout")
-        
-        local PlayerInfoFrame = Instance.new("Frame")
-        local PlayerAvatar = Instance.new("ImageLabel")
-        local PlayerName = Instance.new("TextLabel")
-        local FPSLabel = Instance.new("TextLabel")
-        local PingLabel = Instance.new("TextLabel")
         
         TabButton.Name = tabName.."Button"
         TabButton.Parent = TabScroll
@@ -164,102 +257,12 @@ function Library:CreateWindow(windowName)
         TabFrame.Parent = ItemContainer
         TabFrame.BackgroundTransparency = 1
         TabFrame.Size = UDim2.new(1, -20, 1, -20)
-        TabFrame.Position = UDim2.new(0, 10, 0, 10)
+        TabFrame.Position = UDim2.new(0, 10, 0, isFirstTab and 100 or 10) -- Adjust position for first tab
         TabFrame.Visible = false
         
         ItemLayout.Parent = TabFrame
         ItemLayout.SortOrder = Enum.SortOrder.LayoutOrder
         ItemLayout.Padding = UDim.new(0, 8)
-        
-        PlayerInfoFrame.Name = "PlayerInfoFrame"
-        PlayerInfoFrame.Parent = TabFrame
-        PlayerInfoFrame.BackgroundTransparency = 1
-        PlayerInfoFrame.Size = UDim2.new(1, 0, 0, 80)
-        
-        -- Player Avatar
-        PlayerAvatar.Name = "PlayerAvatar"
-        PlayerAvatar.Parent = PlayerInfoFrame
-        PlayerAvatar.BackgroundColor3 = currentTheme.Primary
-        PlayerAvatar.Size = UDim2.new(0, 50, 0, 50)
-        PlayerAvatar.Position = UDim2.new(0, 0, 0, 0)
-        
-        local AvatarCorner = Instance.new("UICorner")
-        AvatarCorner.CornerRadius = UDim.new(1, 0)
-        AvatarCorner.Parent = PlayerAvatar
-        
-        -- Player Name
-        PlayerName.Name = "PlayerName"
-        PlayerName.Parent = PlayerInfoFrame
-        PlayerName.BackgroundTransparency = 1
-        PlayerName.Position = UDim2.new(0, 60, 0, 5)
-        PlayerName.Size = UDim2.new(1, -60, 0, 20)
-        PlayerName.Font = Enum.Font.SourceSansSemibold
-        PlayerName.Text = "Player: " .. Players.LocalPlayer.Name
-        PlayerName.TextColor3 = currentTheme.Text
-        PlayerName.TextSize = 16
-        PlayerName.TextXAlignment = Enum.TextXAlignment.Left
-        
-        -- FPS Label
-        FPSLabel.Name = "FPSLabel"
-        FPSLabel.Parent = PlayerInfoFrame
-        FPSLabel.BackgroundTransparency = 1
-        FPSLabel.Position = UDim2.new(0, 60, 0, 30)
-        FPSLabel.Size = UDim2.new(1, -60, 0, 20)
-        FPSLabel.Font = Enum.Font.SourceSansSemibold
-        FPSLabel.Text = "FPS: Calculating..."
-        FPSLabel.TextColor3 = currentTheme.Text
-        FPSLabel.TextSize = 14
-        FPSLabel.TextXAlignment = Enum.TextXAlignment.Left
-        
-        -- Ping Label
-        PingLabel.Name = "PingLabel"
-        PingLabel.Parent = PlayerInfoFrame
-        PingLabel.BackgroundTransparency = 1
-        PingLabel.Position = UDim2.new(0, 60, 0, 50)
-        PingLabel.Size = UDim2.new(1, -60, 0, 20)
-        PingLabel.Font = Enum.Font.SourceSansSemibold
-        PingLabel.Text = "Ping: Calculating..."
-        PingLabel.TextColor3 = currentTheme.Text
-        PingLabel.TextSize = 14
-        PingLabel.TextXAlignment = Enum.TextXAlignment.Left
-        
-        local userId = Players.LocalPlayer.UserId
-        local thumbType = Enum.ThumbnailType.HeadShot
-        local thumbSize = Enum.ThumbnailSize.Size420x420
-        local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
-        
-        PlayerAvatar.Image = content
-        
-        local fps = 0
-        local fpsCount = 0
-        local fpsTime = 0
-        
-        local function updateFPS(deltaTime)
-            fpsTime = fpsTime + deltaTime
-            fpsCount = fpsCount + 1
-            
-            if fpsTime >= 1 then
-                fps = math.floor(fpsCount / fpsTime)
-                fpsCount = 0
-                fpsTime = 0
-                if FPSLabel then
-                    FPSLabel.Text = "FPS: " .. fps
-                end
-            end
-        end
-        
-        local function getPing()
-            return math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
-        end
-        
-        local function updatePing()
-            if PingLabel then
-                PingLabel.Text = "Ping: " .. getPing() .. "ms"
-            end
-        end
-        
-        local heartbeatConnection
-        local pingConnection
         
         TabButton.MouseButton1Click:Connect(function()
             for _, child in pairs(ItemContainer:GetChildren()) do
@@ -277,18 +280,12 @@ function Library:CreateWindow(windowName)
             TabFrame.Visible = true
             TabButton.BackgroundColor3 = currentTheme.Accent
             
-            if heartbeatConnection then
-                heartbeatConnection:Disconnect()
+            -- Hide player info when switching to other tabs
+            if not isFirstTab then
+                PlayerInfoFrame.Visible = false
+            else
+                PlayerInfoFrame.Visible = true
             end
-            if pingConnection then
-                pingConnection:Disconnect()
-            end
-            
-            heartbeatConnection = RunService.Heartbeat:Connect(updateFPS)
-            pingConnection = game:GetService("RunService").Heartbeat:Connect(function()
-                updatePing()
-                wait(1) -- Update ping every second
-            end)
         end)
         
         local TabObject = {}
@@ -506,6 +503,7 @@ function Library:CreateWindow(windowName)
         
         if #TabScroll:GetChildren() == 1 then
             TabButton:Fire("MouseButton1Click")
+            isFirstTab = false
         end
         
         return TabObject
