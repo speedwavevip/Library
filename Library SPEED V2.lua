@@ -286,7 +286,7 @@ function ModernUI:CreateWindow(config)
     
     MinimizeBtn.MouseButton1Click:Connect(function()
         if enableSounds then
-            CreateSound("rbxassetid://131961136", 0.2)
+            CreateSound("rbxassetid://6309164078", 0.2)
         end
         
         isMinimized = not isMinimized
@@ -305,12 +305,12 @@ function ModernUI:CreateWindow(config)
             ShadowFrame.Size = shadowSize
         end
         
-        MinimizeBtn.Text = isMinimized and "□" or "−"
+        MinimizeBtn.Text = isMinimized and "+" or "−"
     end)
     
     CloseBtn.MouseButton1Click:Connect(function()
         if enableSounds then
-            CreateSound("rbxassetid://131961136", 0.3)
+            CreateSound("rbxassetid://6309164078", 0.3)
         end
         
         if enableAnimations then
@@ -538,7 +538,7 @@ function ModernUI:CreateWindow(config)
         
         TabButton.MouseButton1Click:Connect(function()
             if enableSounds then
-                CreateSound("rbxassetid://131961136", 0.1)
+                CreateSound("rbxassetid://6309164078", 0.1)
             end
             
             CreateRipple(TabButton, Mouse.X - TabButton.AbsolutePosition.X, Mouse.Y - TabButton.AbsolutePosition.Y)
@@ -741,7 +741,7 @@ function ModernUI:CreateWindow(config)
                 
                 Button.MouseButton1Click:Connect(function()
                     if enableSounds then
-                        CreateSound("rbxassetid://131961136", 0.2)
+                        CreateSound("rbxassetid://6309164078", 0.2)
                     end
                     
                     CreateRipple(Button, Mouse.X - Button.AbsolutePosition.X, Mouse.Y - Button.AbsolutePosition.Y)
@@ -771,110 +771,7 @@ function ModernUI:CreateWindow(config)
                         callback = newCallback or function() end
                     end
                 }
-            end
-
-            local ScreenGui = Instance.new("ScreenGui")
-local ImageButton = Instance.new("ImageButton")
-
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.Name = "ToggleScriptGUI"
-
-ImageButton.Parent = ScreenGui
-ImageButton.Name = "ScriptToggle"
-ImageButton.Size = UDim2.new(0, 50, 0, 50) 
-ImageButton.Position = UDim2.new(1, -60, 1, -60) 
-ImageButton.BackgroundTransparency = 1
-ImageButton.Image = "rbxassetid://3926305904" 
-ImageButton.ImageColor3 = Color3.new(1, 1, 1) 
-
-local scriptEnabled = false
-local partsHidden = false
-
-local function toggleParts()
-    partsHidden = not partsHidden
-    for _, part in ipairs(workspace:GetDescendants()) do
-        if part:IsA("BasePart") and part.Name ~= "Terrain" then
-            part.Transparency = partsHidden and 0.8 or 0
-            if part:FindFirstChildOfClass("Texture") then
-                part.Material = partsHidden and Enum.Material.Glass or Enum.Material.Plastic
-            end
-        end
-    end
-end
-
-local function toggleScript()
-    scriptEnabled = not scriptEnabled
-    
-    if scriptEnabled then
-        
-        ImageButton.ImageColor3 = Color3.new(0, 1, 0) -- Green
-        toggleParts()
-    else
-        
-        ImageButton.ImageColor3 = Color3.new(1, 1, 1) -- White
-        toggleParts()
-    end
-    
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://6309164078"
-    sound.Parent = game.Workspace
-    sound:Play()
-    game:GetService("Debris"):AddItem(sound, 2)
-end
-
-ImageButton.MouseButton1Click:Connect(toggleScript)
-
-local dragging
-local dragInput
-local dragStart
-local startPos
-
-local function update(input)
-    local delta = input.Position - dragStart
-    ImageButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
-ImageButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = ImageButton.Position
-        
-        ImageButton:TweenSize(
-            UDim2.new(0, 55, 0, 55),
-            Enum.EasingDirection.Out,
-            Enum.EasingStyle.Quad,
-            0.1,
-            true
-        )
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-                -- Return to normal size
-                ImageButton:TweenSize(
-                    UDim2.new(0, 50, 0, 50),
-                    Enum.EasingDirection.Out,
-                    Enum.EasingStyle.Quad,
-                    0.1,
-                    true
-                )
-            end
-        end)
-    end
-end)
-
-ImageButton.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
-    end
-end)
+            end            
             
             function SectionObject:CreateToggle(config)
                 config = config or {}
@@ -954,7 +851,7 @@ end)
                     updateToggle()
                     
                     if enableSounds then
-                        CreateSound("rbxassetid://131961136", 0.15)
+                        CreateSound("rbxassetid://6309164078", 0.15)
                     end
                     
                     pcall(callback, toggleState)
@@ -1089,7 +986,7 @@ end)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         dragging = true
                         if enableSounds then
-                            CreateSound("rbxassetid://131961136", 0.1)
+                            CreateSound("rbxassetid://6309164078", 0.1)
                         end
                     end
                 end)
@@ -1253,7 +1150,7 @@ end)
                         DropdownLabel.Text = text .. ": " .. option
                         
                         if enableSounds then
-                            CreateSound("rbxassetid://131961136", 0.15)
+                            CreateSound("rbxassetid://6309164078", 0.15)
                         end
                         
                         isOpen = false
@@ -1283,7 +1180,7 @@ end)
                     isOpen = not isOpen
                     
                     if enableSounds then
-                        CreateSound("rbxassetid://131961136", 0.1)
+                        CreateSound("rbxassetid://6309164078", 0.1)
                     end
                     
                     if isOpen then
@@ -1394,7 +1291,7 @@ end)
                 TextBoxInput.FocusLost:Connect(function(enterPressed)
                     if enterPressed then
                         if enableSounds then
-                            CreateSound("rbxassetid://131961136", 0.15)
+                            CreateSound("rbxassetid://6309164078", 0.15)
                         end
                         pcall(callback, TextBoxInput.Text)
                     end
