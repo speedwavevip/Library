@@ -788,7 +788,7 @@ function ModernUI:CreateWindow(config)
                 local ToggleIndicatorCorner = Instance.new("UICorner")
                 
                 ToggleFrame.Name = "Toggle"
-                ToggleFrame.Parent = SectionContent
+                ToggleFrame.Parent = self.ContentFrame
                 ToggleFrame.BackgroundColor3 = theme.Background
                 ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
                 ToggleFrame.BorderSizePixel = 0
