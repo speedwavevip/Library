@@ -91,7 +91,7 @@ local Themes = {
         TextSecondary = Color3.fromRGB(148, 163, 184),
         Border = Color3.fromRGB(50, 65, 85)
     },
-    ["Royal Red"] = {
+    ["RoyalRed"] = {
     Background = Color3.fromRGB(20, 10, 10),        
     Surface = Color3.fromRGB(40, 15, 15),          
     Card = Color3.fromRGB(60, 20, 20),             
