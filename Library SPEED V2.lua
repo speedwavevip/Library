@@ -280,7 +280,7 @@ function Library:CreateWindow(windowName)
             return Discord
         end
         
-        function Tab:CreateToggle(config)
+    function TabObject:CreateToggle()
     local Toggle = {}
     config = config or {}
     Toggle.Value = config.CurrentValue or false
@@ -345,7 +345,6 @@ function Library:CreateWindow(windowName)
                 Position = UDim2.new(1, -18, 0, 2)
             }):Play()
         else
-            -- حالة الإيقاف (OFF)
             TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
                 BackgroundColor3 = Color3.fromRGB(60, 60, 65)
             }):Play()
