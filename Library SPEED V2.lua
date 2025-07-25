@@ -22,7 +22,7 @@ local function CreateSound(soundId, volume)
     end
     
     local sound = Instance.new("Sound")
-    sound.Name = "rbxassetid://6309164078"
+    sound.Name = "UISound"
     sound.Parent = workspace
     sound.Volume = volume
     sound.SoundId = soundId
@@ -78,11 +78,10 @@ local Themes = {
     }
 }
 
-
 function ModernUI:CreateWindow(config)
     config = config or {}
     local windowTitle = config.Title or "Modern UI"
-    local theme = Themes[config.Theme or "Red"]
+    local theme = Themes[config.Theme or "Dark"]
     local enableAnimations = config.Animations ~= false
     local enableSounds = config.Sounds ~= false
     
@@ -774,120 +773,106 @@ function ModernUI:CreateWindow(config)
             end            
             
             function SectionObject:CreateToggle(config)
-    config = config or {}
-    local text = config.Text or "Toggle"
-    local default = config.Default or false
-    local callback = config.Callback or function() end
-    
-    local enableAnimations = true
-    local enableSounds = true
-    
-    local ToggleFrame = Instance.new("Frame")
-    local ToggleCorner = Instance.new("UICorner")
-    local ToggleLabel = Instance.new("TextLabel")
-    local ToggleButton = Instance.new("TextButton")
-    local ToggleButtonCorner = Instance.new("UICorner")
-    local ToggleIndicator = Instance.new("Frame")
-    local ToggleIndicatorCorner = Instance.new("UICorner")
-    
-    ToggleFrame.Name = "Toggle"
-    ToggleFrame.Parent = self.ContentFrame 
-    ToggleFrame.BackgroundColor3 = theme.Background
-    ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
-    ToggleFrame.BorderSizePixel = 0
-    
-    ToggleCorner.CornerRadius = UDim.new(0, 8)
-    ToggleCorner.Parent = ToggleFrame
-    
-    ToggleLabel.Name = "Label"
-    ToggleLabel.Parent = ToggleFrame
-    ToggleLabel.BackgroundTransparency = 1
-    ToggleLabel.Position = UDim2.new(0, 15, 0, 0)
-    ToggleLabel.Size = UDim2.new(1, -80, 1, 0)
-    ToggleLabel.Font = Enum.Font.Gotham
-    ToggleLabel.Text = text
-    ToggleLabel.TextColor3 = theme.Text
-    ToggleLabel.TextSize = 14
-    ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    
-    ToggleButton.Name = "Button"
-    ToggleButton.Parent = ToggleFrame
-    ToggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-    ToggleButton.Position = UDim2.new(1, -55, 0.5, -10)
-    ToggleButton.Size = UDim2.new(0, 45, 0, 20)
-    ToggleButton.Text = ""
-    ToggleButton.BorderSizePixel = 0
-    
-    ToggleButtonCorner.CornerRadius = UDim.new(1, 0)
-    ToggleButtonCorner.Parent = ToggleButton
-    
-    ToggleIndicator.Name = "Indicator"
-    ToggleIndicator.Parent = ToggleButton
-    ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleIndicator.Position = UDim2.new(0, 2, 0, 2)
-    ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
-    ToggleIndicator.BorderSizePixel = 0
-    
-    ToggleIndicatorCorner.CornerRadius = UDim.new(1, 0)
-    ToggleIndicatorCorner.Parent = ToggleIndicator
-    
-    local toggleState = default
-    
-    local function updateToggle()
-        if enableAnimations then
-            TweenService:Create(ToggleButton, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {
-                BackgroundColor3 = toggleState and theme.Success or Color3.fromRGB(60, 60, 70)
-            }):Play()
-            
-            TweenService:Create(ToggleIndicator, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {
-                Position = toggleState and UDim2.new(1, -18, 0, 2) or UDim2.new(0, 2, 0, 2)
-            }):Play()
-        else
-            ToggleButton.BackgroundColor3 = toggleState and theme.Success or Color3.fromRGB(60, 60, 70)
-            ToggleIndicator.Position = toggleState and UDim2.new(1, -18, 0, 2) or UDim2.new(0, 2, 0, 2)
-        end
-    end
-    
-    local function CreateSound(soundId, volume)
-        local sound = Instance.new("Sound")
-        sound.SoundId = soundId
-        sound.Volume = volume
-        sound.Parent = game:GetService("SoundService")
-        sound:Play()
-        game:Debris:AddItem(sound, sound.TimeLength + 1)
-    end
-    
-    updateToggle()
-    
-    ToggleButton.MouseButton1Click:Connect(function()
-        toggleState = not toggleState
-        updateToggle()
-        
-        if enableSounds then
-            CreateSound("rbxassetid://6309164078", 0.15)
-        end
-        
-        pcall(callback, toggleState)
-    end)
-    
-    if self.UpdateSize then
-        self:UpdateSize()
-    end
-    
-    return {
-        Set = function(value)
-            toggleState = value
-            updateToggle()
-            pcall(callback, toggleState)
-        end,
-        Get = function()
-            return toggleState
-        end,
-        Destroy = function()
-            ToggleFrame:Destroy()
-        end
-    }
-end
+                config = config or {}
+                local text = config.Text or "Toggle"
+                local default = config.Default or false
+                local callback = config.Callback or function() end
+                
+                local ToggleFrame = Instance.new("Frame")
+                local ToggleCorner = Instance.new("UICorner")
+                local ToggleLabel = Instance.new("TextLabel")
+                local ToggleButton = Instance.new("TextButton")
+                local ToggleButtonCorner = Instance.new("UICorner")
+                local ToggleIndicator = Instance.new("Frame")
+                local ToggleIndicatorCorner = Instance.new("UICorner")
+                
+                ToggleFrame.Name = "Toggle"
+                ToggleFrame.Parent = SectionContent
+                ToggleFrame.BackgroundColor3 = theme.Background
+                ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
+                ToggleFrame.BorderSizePixel = 0
+                
+                ToggleCorner.CornerRadius = UDim.new(0, 8)
+                ToggleCorner.Parent = ToggleFrame
+                
+                ToggleLabel.Name = "Label"
+                ToggleLabel.Parent = ToggleFrame
+                ToggleLabel.BackgroundTransparency = 1
+                ToggleLabel.Position = UDim2.new(0, 15, 0, 0)
+                ToggleLabel.Size = UDim2.new(1, -80, 1, 0)
+                ToggleLabel.Font = Enum.Font.Gotham
+                ToggleLabel.Text = text
+                ToggleLabel.TextColor3 = theme.Text
+                ToggleLabel.TextSize = 14
+                ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+                
+                ToggleButton.Name = "Button"
+                ToggleButton.Parent = ToggleFrame
+                ToggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+                ToggleButton.Position = UDim2.new(1, -55, 0.5, -10)
+                ToggleButton.Size = UDim2.new(0, 45, 0, 20)
+                ToggleButton.Text = ""
+                ToggleButton.BorderSizePixel = 0
+                
+                ToggleButtonCorner.CornerRadius = UDim.new(1, 0)
+                ToggleButtonCorner.Parent = ToggleButton
+                
+                ToggleIndicator.Name = "Indicator"
+                ToggleIndicator.Parent = ToggleButton
+                ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                ToggleIndicator.Position = UDim2.new(0, 2, 0, 2)
+                ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
+                ToggleIndicator.BorderSizePixel = 0
+                
+                ToggleIndicatorCorner.CornerRadius = UDim.new(1, 0)
+                ToggleIndicatorCorner.Parent = ToggleIndicator
+                
+                local toggleState = default
+                
+                local function updateToggle()
+                    if enableAnimations then
+                        TweenService:Create(ToggleButton, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {
+                            BackgroundColor3 = toggleState and theme.Success or Color3.fromRGB(60, 60, 70)
+                        }):Play()
+                        
+                        TweenService:Create(ToggleIndicator, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {
+                            Position = toggleState and UDim2.new(1, -18, 0, 2) or UDim2.new(0, 2, 0, 2)
+                        }):Play()
+                    else
+                        ToggleButton.BackgroundColor3 = toggleState and theme.Success or Color3.fromRGB(60, 60, 70)
+                        ToggleIndicator.Position = toggleState and UDim2.new(1, -18, 0, 2) or UDim2.new(0, 2, 0, 2)
+                    end
+                end
+                
+                updateToggle()
+                
+                ToggleButton.MouseButton1Click:Connect(function()
+                    toggleState = not toggleState
+                    updateToggle()
+                    
+                    if enableSounds then
+                        CreateSound("rbxassetid://6309164078", 0.15)
+                    end
+                    
+                    pcall(callback, toggleState)
+                end)
+                
+                updateSectionSize()
+                
+                return {
+                    Set = function(value)
+                        toggleState = value
+                        updateToggle()
+                        pcall(callback, toggleState)
+                    end,
+                    Get = function()
+                        return toggleState
+                    end,
+                    Destroy = function()
+                        ToggleFrame:Destroy()
+                    end
+                }
+            end
             
             function SectionObject:CreateSlider(config)
                 config = config or {}
