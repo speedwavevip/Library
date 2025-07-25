@@ -62,20 +62,22 @@ local function CreateRipple(parent, x, y)
 end
 
 local Themes = {
-    ["Red"] = {
-        Background = Color3.fromRGB(10, 10, 15),
-        Surface = Color3.fromRGB(35, 15, 15),
-        Card = Color3.fromRGB(50, 20, 20),
-        Primary = Color3.fromRGB(10, 10, 15),
-        Secondary = Color3.fromRGB(180, 40, 40),
-        Success = Color3.fromRGB(50, 180, 50),
-        Warning = Color3.fromRGB(220, 150, 50),
-        Error = Color3.fromRGB(220, 50, 50),
-        Text = Color3.fromRGB(255, 0, 0),
-        TextSecondary = Color3.fromRGB(200, 160, 160),
-        Border = Color3.fromRGB(70, 30, 30)
+    ["Dark"] = {
+        Background = Color3.fromRGB(10, 10, 15),        
+        Surface = Color3.fromRGB(20, 20, 30),            
+        Card = Color3.fromRGB(30, 30, 45),               
+        Primary = Color3.fromRGB(100, 150, 255),         
+        Secondary = Color3.fromRGB(180, 120, 255),       
+        Accent = Color3.fromRGB(0, 255, 200),            
+        Success = Color3.fromRGB(50, 220, 120),          
+        Warning = Color3.fromRGB(255, 180, 40),          
+        Error = Color3.fromRGB(255, 70, 90),             
+        Text = Color3.fromRGB(240, 240, 250),            
+        TextSecondary = Color3.fromRGB(170, 180, 200),    
+        Border = Color3.fromRGB(50, 50, 70)              
     }
 }
+
 
 function ModernUI:CreateWindow(config)
     config = config or {}
