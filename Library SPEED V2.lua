@@ -928,9 +928,10 @@ function ModernUI:CreateWindow(config)
                 SliderTrack.Name = "Track"
                 SliderTrack.Parent = SliderFrame
                 SliderTrack.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-                SliderTrack.Position = UDim2.new(0, 15, 0, 30)
+                SliderTrack.Position = UDim2.new(0, 15, 1, -20) -- Old ( 0, 15, 0, 30 )
                 SliderTrack.Size = UDim2.new(1, -30, 0, 6)
                 SliderTrack.BorderSizePixel = 0
+                SliderTrack.AnchorPoint = Vector.new(1, 0)
                 
                 SliderTrackCorner.CornerRadius = UDim.new(1, 0)
                 SliderTrackCorner.Parent = SliderTrack
@@ -973,11 +974,11 @@ function ModernUI:CreateWindow(config)
                             Size = UDim2.new(percent, 0, 1, 0)
                         }):Play()
                         TweenService:Create(SliderButton, TweenInfo.new(0.15), {
-                            Position = UDim2.new(percent, -6, 0, -3)
+                            Position = UDim2.new(percent, -6, 0.5, -6) -- Old ( -6, 0, -3 )
                         }):Play()
                     else
                         SliderFill.Size = UDim2.new(percent, 0, 1, 0)
-                        SliderButton.Position = UDim2.new(percent, -6, 0, -3)
+                        SliderButton.Position = UDim2.new(percent, -6, 0.5, -6) -- Old ( -6, 0, -3 )
                     end
                     
                     pcall(callback, currentValue)
