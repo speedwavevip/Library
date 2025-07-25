@@ -90,7 +90,7 @@ function ModernUI:CreateWindow(config)
             gui:Destroy() 
         end
     end
-
+    
     local ScreenGui = Instance.new("ScreenGui")
     local BlurFrame = Instance.new("Frame")
     local MainContainer = Instance.new("Frame")
@@ -255,31 +255,28 @@ function ModernUI:CreateWindow(config)
             startPos = MainContainer.Position
             
             local connection
-            connection = input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    connection:Disconnect()
+            connection = UserInputService.InputChanged:Connect(function(moveInput)
+                if moveInput.UserInputType == Enum.UserInputType.MouseMovement and dragStart then
+                    local delta = moveInput.Position - dragStart
+                    MainContainer.Position = UDim2.new(
+                        startPos.X.Scale, startPos.X.Offset + delta.X,
+                        startPos.Y.Scale, startPos.Y.Offset + delta.Y
+                    )
+                    ShadowFrame.Position = UDim2.new(
+                        startPos.X.Scale, startPos.X.Offset + delta.X - 3,
+                        startPos.Y.Scale, startPos.Y.Offset + delta.Y - 3
+                    )
                 end
             end)
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement and dragStart then
-            local delta = input.Position - dragStart
-            MainContainer.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X,
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y
-            )
-            ShadowFrame.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X - 3,
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y - 3
-            )
-        end
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragStart = nil
+            
+            local endConnection
+            endConnection = UserInputService.InputEnded:Connect(function(endInput)
+                if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
+                    dragStart = nil
+                    connection:Disconnect()
+                    endConnection:Disconnect()
+                end
+            end)
         end
     end)
     
@@ -445,7 +442,7 @@ function ModernUI:CreateWindow(config)
         SubmitCorner.CornerRadius = UDim.new(0, 8)
         SubmitCorner.Parent = SubmitBtn
         
-        SubmitBtn.MouseButton1Click:Connect(function()
+        local function validateKey()
             if KeyInput.Text == correctKey then
                 BlurFrame.Visible = false
                 KeyFrame:Destroy()
@@ -458,24 +455,13 @@ function ModernUI:CreateWindow(config)
                     Type = "Error"
                 })
             end
-        end)
+        end
+        
+        SubmitBtn.MouseButton1Click:Connect(validateKey)
         
         KeyInput.FocusLost:Connect(function(enterPressed)
             if enterPressed then
-                local connection = SubmitBtn.MouseButton1Click:Connect(function() end)
-                connection:Disconnect()
-                if KeyInput.Text == correctKey then
-                    BlurFrame.Visible = false
-                    KeyFrame:Destroy()
-                    callback(true)
-                else
-                    callback(false)
-                    WindowObject:Notify({
-                        Title = "Access Denied",
-                        Content = "Invalid key entered",
-                        Type = "Error"
-                    })
-                end
+                validateKey()
             end
         end)
     end
@@ -691,105 +677,94 @@ function ModernUI:CreateWindow(config)
             end
             
             function SectionObject:CreateButton(config)
-    config = config or {}
-    local text = config.Text or "Button"
-    local callback = config.Callback or function() end
-    local Button = Instance.new("TextButton")
-    local ButtonCorner = Instance.new("UICorner")
-    local ButtonStroke = Instance.new("UIStroke")
-    
-    Button.Name = "Button"
-    Button.Parent = SectionContent
-    Button.BackgroundColor3 = theme.Primary or Color3.fromRGB(100, 100, 255) 
-    Button.Size = UDim2.new(1, -10, 0, 35)
-    Button.Position = UDim2.new(0, 5, 0, 0) 
-    Button.Font = Enum.Font.GothamSemibold or Enum.Font.Gotham 
-    Button.Text = text
-    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Button.TextSize = 14
-    Button.BorderSizePixel = 0
-    Button.AutoButtonColor = false
-    Button.Visible = true
-    Button.ZIndex = 1 
-    
-    ButtonCorner.CornerRadius = UDim.new(0, 8)
-    ButtonCorner.Parent = Button
-    
-    ButtonStroke.Color = theme.Primary or Color3.fromRGB(100, 100, 255)
-    ButtonStroke.Thickness = 1
-    ButtonStroke.Transparency = 0.5
-    ButtonStroke.Parent = Button
-    
-    if not SectionContent:FindFirstChild("UIListLayout") then
-        local layout = Instance.new("UIListLayout")
-        layout.Parent = SectionContent
-        layout.SortOrder = Enum.SortOrder.LayoutOrder
-        layout.Padding = UDim.new(0, 5)
-    end
-    
-    Button.MouseEnter:Connect(function()
-        if enableAnimations then
-            local primaryColor = theme.Primary or Color3.fromRGB(100, 100, 255)
-            TweenService:Create(Button, TweenInfo.new(0.15), {
-                BackgroundColor3 = Color3.fromRGB(
-                    math.min(255, primaryColor.R * 255 + 20),
-                    math.min(255, primaryColor.G * 255 + 20),
-                    math.min(255, primaryColor.B * 255 + 20)
-                )
-            }):Play()
-        end
-    end)
-    
-    Button.MouseLeave:Connect(function()
-        if enableAnimations then
-            TweenService:Create(Button, TweenInfo.new(0.15), {
-                BackgroundColor3 = theme.Primary or Color3.fromRGB(100, 100, 255)
-            }):Play()
-        end
-    end)
-    
-    Button.MouseButton1Click:Connect(function()
-        if enableSounds and CreateSound then
-            CreateSound("rbxassetid://6309164078", 0.2)
-        end
-        
-        if CreateRipple and Mouse then
-            CreateRipple(Button, Mouse.X - Button.AbsolutePosition.X, Mouse.Y - Button.AbsolutePosition.Y)
-        end
-        
-        if enableAnimations then
-            local clickTween = TweenService:Create(Button, TweenInfo.new(0.1), {
-                Size = UDim2.new(1, -14, 0, 33)
-            })
-            clickTween:Play()
-            clickTween.Completed:Connect(function()
-                TweenService:Create(Button, TweenInfo.new(0.1), {
-                    Size = UDim2.new(1, -10, 0, 35)
-                }):Play()
-            end)
-        end
-        
-        pcall(callback)
-    end)
-    
-    if updateSectionSize then
-        updateSectionSize()
-    end
-    
-    return {
-        Button = Button, 
-        SetText = function(newText)
-            Button.Text = newText or ""
-        end,
-        SetCallback = function(newCallback)
-            callback = newCallback or function() end
-        end,
-        SetVisible = function(visible)
-            Button.Visible = visible
-        end
-    }
-            
-end   
+                config = config or {}
+                local text = config.Text or "Button"
+                local callback = config.Callback or function() end
+                
+                local Button = Instance.new("TextButton")
+                local ButtonCorner = Instance.new("UICorner")
+                local ButtonStroke = Instance.new("UIStroke")
+                
+                Button.Name = "Button"
+                Button.Parent = SectionContent
+                Button.BackgroundColor3 = theme.Primary
+                Button.Size = UDim2.new(1, -10, 0, 35)
+                Button.Position = UDim2.new(0, 5, 0, 0)
+                Button.Font = Enum.Font.GothamSemibold
+                Button.Text = text
+                Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+                Button.TextSize = 14
+                Button.BorderSizePixel = 0
+                Button.AutoButtonColor = false
+                Button.Visible = true
+                Button.ZIndex = 1
+                
+                ButtonCorner.CornerRadius = UDim.new(0, 8)
+                ButtonCorner.Parent = Button
+                
+                ButtonStroke.Color = theme.Primary
+                ButtonStroke.Thickness = 1
+                ButtonStroke.Transparency = 0.5
+                ButtonStroke.Parent = Button
+                
+                Button.MouseEnter:Connect(function()
+                    if enableAnimations then
+                        local primaryColor = theme.Primary
+                        TweenService:Create(Button, TweenInfo.new(0.15), {
+                            BackgroundColor3 = Color3.fromRGB(
+                                math.min(255, primaryColor.R * 255 + 20),
+                                math.min(255, primaryColor.G * 255 + 20),
+                                math.min(255, primaryColor.B * 255 + 20)
+                            )
+                        }):Play()
+                    end
+                end)
+                
+                Button.MouseLeave:Connect(function()
+                    if enableAnimations then
+                        TweenService:Create(Button, TweenInfo.new(0.15), {
+                            BackgroundColor3 = theme.Primary
+                        }):Play()
+                    end
+                end)
+                
+                Button.MouseButton1Click:Connect(function()
+                    if enableSounds then
+                        CreateSound("rbxassetid://6309164078", 0.2)
+                    end
+                    
+                    CreateRipple(Button, Mouse.X - Button.AbsolutePosition.X, Mouse.Y - Button.AbsolutePosition.Y)
+                    
+                    if enableAnimations then
+                        local clickTween = TweenService:Create(Button, TweenInfo.new(0.1), {
+                            Size = UDim2.new(1, -14, 0, 33)
+                        })
+                        clickTween:Play()
+                        clickTween.Completed:Connect(function()
+                            TweenService:Create(Button, TweenInfo.new(0.1), {
+                                Size = UDim2.new(1, -10, 0, 35)
+                            }):Play()
+                        end)
+                    end
+                    
+                    pcall(callback)
+                end)
+                
+                updateSectionSize()
+                
+                return {
+                    Button = Button,
+                    SetText = function(newText)
+                        Button.Text = newText or ""
+                    end,
+                    SetCallback = function(newCallback)
+                        callback = newCallback or function() end
+                    end,
+                    SetVisible = function(visible)
+                        Button.Visible = visible
+                    end
+                }
+            end
             
             function SectionObject:CreateToggle(config)
                 config = config or {}
@@ -947,10 +922,9 @@ end
                 SliderTrack.Name = "Track"
                 SliderTrack.Parent = SliderFrame
                 SliderTrack.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-                SliderTrack.Position = UDim2.new(0, 15, 1, -20) -- Old ( 0, 15, 0, 30 )
+                SliderTrack.Position = UDim2.new(0, 15, 1, -20)
                 SliderTrack.Size = UDim2.new(1, -30, 0, 6)
                 SliderTrack.BorderSizePixel = 0
-                SliderTrack.AnchorPoint = Vector.new(1, 0)
                 
                 SliderTrackCorner.CornerRadius = UDim.new(1, 0)
                 SliderTrackCorner.Parent = SliderTrack
@@ -967,7 +941,7 @@ end
                 SliderButton.Name = "Button"
                 SliderButton.Parent = SliderTrack
                 SliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                SliderButton.Position = UDim2.new(0, -6, 0, -3)
+                SliderButton.Position = UDim2.new(0, -6, 0.5, -6)
                 SliderButton.Size = UDim2.new(0, 12, 0, 12)
                 SliderButton.Text = ""
                 SliderButton.BorderSizePixel = 0
@@ -993,11 +967,11 @@ end
                             Size = UDim2.new(percent, 0, 1, 0)
                         }):Play()
                         TweenService:Create(SliderButton, TweenInfo.new(0.15), {
-                            Position = UDim2.new(percent, -6, 0.5, -6) -- Old ( -6, 0, -3 )
+                            Position = UDim2.new(percent, -6, 0.5, -6)
                         }):Play()
                     else
                         SliderFill.Size = UDim2.new(percent, 0, 1, 0)
-                        SliderButton.Position = UDim2.new(percent, -6, 0.5, -6) -- Old ( -6, 0, -3 )
+                        SliderButton.Position = UDim2.new(percent, -6, 0.5, -6)
                     end
                     
                     pcall(callback, currentValue)
@@ -1013,6 +987,9 @@ end
                         end
                     end
                 end)
+                
+                local dragConnection
+                local endConnection
                 
                 UserInputService.InputChanged:Connect(function(input)
                     if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
