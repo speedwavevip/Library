@@ -49,6 +49,7 @@ function Library:CreateWindow(windowName)
     local TopBar = Instance.new("Frame")
     local Title = Instance.new("TextLabel")
     local CloseButton = Instance.new("TextButton")
+    local MinimizeButton = Instance.new("TextButton")
     local ContentFrame = Instance.new("Frame")
     local TabContainer = Instance.new("Frame")
     local TabScroll = Instance.new("ScrollingFrame")
@@ -93,6 +94,16 @@ function Library:CreateWindow(windowName)
     CloseButton.TextColor3 = currentTheme.Text
     CloseButton.TextSize = 18
     
+    MinimizeButton.Name = "MinimizeButton"
+    MinimizeButton.Parent = TopBar
+    MinimizeButton.BackgroundTransparency = 1
+    MinimizeButton.Position = UDim2.new(1, -65, 0, 5)
+    MinimizeButton.Size = UDim2.new(0, 25, 0, 25)
+    MinimizeButton.Font = Enum.Font.SourceSansBold
+    MinimizeButton.Text = "_"
+    MinimizeButton.TextColor3 = currentTheme.Text
+    MinimizeButton.TextSize = 18
+    
     ContentFrame.Name = "ContentFrame"
     ContentFrame.Parent = MainFrame
     ContentFrame.BackgroundTransparency = 1
@@ -126,7 +137,82 @@ function Library:CreateWindow(windowName)
         ScreenGui:Destroy()
     end)
     
+    local isMinimized = false
+    MinimizeButton.MouseButton1Click:Connect(function()
+        isMinimized = not isMinimized
+        if isMinimized then
+            MainFrame.Size = UDim2.new(0, 600, 0, 35)
+        else
+            MainFrame.Size = UDim2.new(0, 600, 0, 400)
+        end
+    end)
+    
     local WindowObject = {}
+    
+    function WindowObject:MakeNotifi(title, text, duration)
+        duration = duration or 5
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = title or "Notification",
+            Text = text or "Message",
+            Duration = duration
+        })
+    end
+    
+    function WindowObject:KeySystem(key, callback)
+        local keyFrame = Instance.new("Frame")
+        keyFrame.Name = "KeySystemFrame"
+        keyFrame.BackgroundColor3 = currentTheme.Primary
+        keyFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+        keyFrame.Size = UDim2.new(0, 300, 0, 150)
+        keyFrame.Parent = ScreenGui
+        
+        local keyTitle = Instance.new("TextLabel")
+        keyTitle.Name = "KeyTitle"
+        keyTitle.BackgroundTransparency = 1
+        keyTitle.Position = UDim2.new(0, 0, 0, 10)
+        keyTitle.Size = UDim2.new(1, 0, 0, 30)
+        keyTitle.Font = Enum.Font.SourceSansBold
+        keyTitle.Text = "Key System"
+        keyTitle.TextColor3 = currentTheme.Text
+        keyTitle.TextSize = 20
+        keyTitle.Parent = keyFrame
+        
+        local keyInput = Instance.new("TextBox")
+        keyInput.Name = "KeyInput"
+        keyInput.BackgroundColor3 = currentTheme.Secondary
+        keyInput.Position = UDim2.new(0.5, -100, 0.5, -15)
+        keyInput.Size = UDim2.new(0, 200, 0, 30)
+        keyInput.Font = Enum.Font.SourceSans
+        keyInput.PlaceholderText = "Enter key..."
+        keyInput.Text = ""
+        keyInput.TextColor3 = currentTheme.Text
+        keyInput.TextSize = 14
+        keyInput.Parent = keyFrame
+        
+        local keySubmit = Instance.new("TextButton")
+        keySubmit.Name = "KeySubmit"
+        keySubmit.BackgroundColor3 = currentTheme.Accent
+        keySubmit.Position = UDim2.new(0.5, -50, 0.8, -15)
+        keySubmit.Size = UDim2.new(0, 100, 0, 30)
+        keySubmit.Font = Enum.Font.SourceSansBold
+        keySubmit.Text = "Submit"
+        keySubmit.TextColor3 = currentTheme.Text
+        keySubmit.TextSize = 14
+        keySubmit.Parent = keyFrame
+        
+        keySubmit.MouseButton1Click:Connect(function()
+            if keyInput.Text == key then
+                keyFrame:Destroy()
+                if callback then
+                    callback(true)
+                end
+            else
+                if callback then
+                    callback(false)
+                end
+            end
+        end)
+    end
     
     function WindowObject:CreateTab(tabName)
         tabName = tabName or "Tab"
@@ -202,6 +288,153 @@ function Library:CreateWindow(windowName)
             }
         end
 
+        function TabObject:CreateButton(config)
+            config = config or {}
+            local Button = Instance.new("TextButton")
+            local UICorner = Instance.new("UICorner")
+            
+            Button.Name = "Button"
+            Button.Parent = TabFrame
+            Button.BackgroundColor3 = currentTheme.Primary
+            Button.Size = UDim2.new(1, 0, 0, 35)
+            Button.Text = config.Name or "Button"
+            Button.TextColor3 = currentTheme.Text
+            Button.TextSize = 14
+            Button.AutoButtonColor = false
+            
+            UICorner.CornerRadius = UDim.new(0, 5)
+            UICorner.Parent = Button
+            
+            Button.MouseEnter:Connect(function()
+                TweenService:Create(Button, TweenInfo.new(0.1), {
+                    BackgroundColor3 = Color3.fromRGB(
+                        math.floor(currentTheme.Primary.R * 255 + 20),
+                        math.floor(currentTheme.Primary.G * 255 + 20),
+                        math.floor(currentTheme.Primary.B * 255 + 20)
+                    )
+                }):Play()
+            end)
+            
+            Button.MouseLeave:Connect(function()
+                TweenService:Create(Button, TweenInfo.new(0.1), {
+                    BackgroundColor3 = currentTheme.Primary
+                }):Play()
+            end)
+            
+            Button.MouseButton1Click:Connect(function()
+                if config.Callback then
+                    pcall(config.Callback)
+                end
+            end)
+            
+            return {
+                SetText = function(text)
+                    Button.Text = text or ""
+                end,
+                SetCallback = function(callback)
+                    config.Callback = callback
+                end
+            }
+        end
+
+        function TabObject:CreateToggle(config)
+            config = config or {}
+            local Toggle = {}
+            Toggle.Value = config.CurrentValue or false
+            
+            local ToggleFrame = Instance.new("Frame")
+            local ToggleCorner = Instance.new("UICorner")
+            local ToggleLabel = Instance.new("TextLabel")
+            local ToggleButton = Instance.new("TextButton")
+            local ToggleButtonCorner = Instance.new("UICorner")
+            local ToggleIndicator = Instance.new("Frame")
+            local ToggleIndicatorCorner = Instance.new("UICorner")
+            
+            ToggleFrame.Name = "Toggle"
+            ToggleFrame.Parent = TabFrame
+            ToggleFrame.BackgroundColor3 = currentTheme.Primary
+            ToggleFrame.BorderSizePixel = 0
+            ToggleFrame.Size = UDim2.new(1, 0, 0, 35)
+            
+            ToggleCorner.CornerRadius = UDim.new(0, 5)
+            ToggleCorner.Parent = ToggleFrame
+            
+            ToggleLabel.Name = "ToggleLabel"
+            ToggleLabel.Parent = ToggleFrame
+            ToggleLabel.BackgroundTransparency = 1
+            ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
+            ToggleLabel.Size = UDim2.new(0, 200, 1, 0)
+            ToggleLabel.Text = config.Name or "Toggle"
+            ToggleLabel.TextColor3 = currentTheme.Text
+            ToggleLabel.TextSize = 14
+            ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            
+            ToggleButton.Name = "ToggleButton"
+            ToggleButton.Parent = ToggleFrame
+            ToggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+            ToggleButton.BorderSizePixel = 0
+            ToggleButton.Size = UDim2.new(0, 40, 0, 20)
+            ToggleButton.Position = UDim2.new(1, -50, 0.5, -10)
+            ToggleButton.Text = ""
+            
+            ToggleButtonCorner.CornerRadius = UDim.new(1, 0)
+            ToggleButtonCorner.Parent = ToggleButton
+            
+            ToggleIndicator.Name = "ToggleIndicator"
+            ToggleIndicator.Parent = ToggleButton
+            ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ToggleIndicator.BorderSizePixel = 0
+            ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
+            ToggleIndicator.Position = UDim2.new(0, 2, 0, 2)
+            
+            ToggleIndicatorCorner.CornerRadius = UDim.new(1, 0)
+            ToggleIndicatorCorner.Parent = ToggleIndicator
+            
+            local function updateToggle()
+                if Toggle.Value then
+                    TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                        BackgroundColor3 = currentTheme.Accent
+                    }):Play()
+                    TweenService:Create(ToggleIndicator, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                        Position = UDim2.new(1, -18, 0, 2)
+                    }):Play()
+                else
+                    TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                        BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+                    }):Play()
+                    TweenService:Create(ToggleIndicator, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                        Position = UDim2.new(0, 2, 0, 2)
+                    }):Play()
+                end
+            end
+            
+            updateToggle()
+            
+            ToggleButton.MouseButton1Click:Connect(function()
+                Toggle.Value = not Toggle.Value
+                updateToggle()
+                if config.Callback then
+                    pcall(config.Callback, Toggle.Value)
+                end
+            end)
+            
+            function Toggle:Set(value)
+                if Toggle.Value ~= value then
+                    Toggle.Value = value
+                    updateToggle()
+                    if config.Callback then
+                        pcall(config.Callback, Toggle.Value)
+                    end
+                end
+            end
+            
+            function Toggle:Get()
+                return Toggle.Value
+            end
+            
+            return Toggle
+        end
+        
         function TabObject:CreateDiscordButton()
             local Discord = Instance.new("TextButton")
             local UICorner = Instance.new("UICorner")
@@ -280,121 +513,9 @@ function Library:CreateWindow(windowName)
             return Discord
         end
         
-    function TabObject:CreateToggle()
-    local Toggle = {}
-    config = config or {}
-    Toggle.Value = config.CurrentValue or false
-    
-    local ToggleFrame = Instance.new("Frame")
-    ToggleFrame.Name = "Toggle"
-    ToggleFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    ToggleFrame.BorderSizePixel = 0
-    ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
-    ToggleFrame.Parent = TabContent
-    
-    local ToggleCorner = Instance.new("UICorner")
-    ToggleCorner.CornerRadius = UDim.new(0, 8)
-    ToggleCorner.Parent = ToggleFrame
-    
-    local ToggleLabel = Instance.new("TextLabel")
-    ToggleLabel.Name = "ToggleLabel"
-    ToggleLabel.BackgroundTransparency = 1
-    ToggleLabel.Position = UDim2.new(0, 15, 0, 0)
-    ToggleLabel.Size = UDim2.new(0, 200, 1, 0)
-    ToggleLabel.Text = config.Name or "Toggle"
-    ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleLabel.TextScaled = true
-    ToggleLabel.TextWrapped = true
-    ToggleLabel.Font = Enum.Font.Gotham
-    ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    ToggleLabel.Parent = ToggleFrame
-    
-    local ToggleButton = Instance.new("TextButton")
-    ToggleButton.Name = "ToggleButton"
-    ToggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
-    ToggleButton.BorderSizePixel = 0
-    ToggleButton.Size = UDim2.new(0, 40, 0, 20)
-    ToggleButton.Position = UDim2.new(1, -50, 0.5, -10)
-    ToggleButton.Text = ""
-    ToggleButton.Parent = ToggleFrame
-    
-    local ToggleButtonCorner = Instance.new("UICorner")
-    ToggleButtonCorner.CornerRadius = UDim.new(1, 0)
-    ToggleButtonCorner.Parent = ToggleButton
-    
-    local ToggleIndicator = Instance.new("Frame")
-    ToggleIndicator.Name = "ToggleIndicator"
-    ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleIndicator.BorderSizePixel = 0
-    ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
-    ToggleIndicator.Position = UDim2.new(0, 2, 0, 2)
-    ToggleIndicator.Parent = ToggleButton
-    
-    local ToggleIndicatorCorner = Instance.new("UICorner")
-    ToggleIndicatorCorner.CornerRadius = UDim.new(1, 0)
-    ToggleIndicatorCorner.Parent = ToggleIndicator
-    
-
-    local function updateToggle()
-        if Toggle.Value then
-                    
-            TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-                BackgroundColor3 = Color3.fromRGB(0, 162, 255)
-            }):Play()
-            TweenService:Create(ToggleIndicator, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-                Position = UDim2.new(1, -18, 0, 2)
-            }):Play()
-        else
-            TweenService:Create(ToggleButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-                BackgroundColor3 = Color3.fromRGB(60, 60, 65)
-            }):Play()
-            TweenService:Create(ToggleIndicator, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-                Position = UDim2.new(0, 2, 0, 2)
-            }):Play()
-        end
-    end
-    
-    updateToggle()
-    
-    ToggleButton.MouseButton1Click:Connect(function()
-        Toggle.Value = not Toggle.Value
-        updateToggle()
-        if config.Callback then
-            pcall(config.Callback, Toggle.Value)
-        end
-    end)
-    
-    ToggleButton.MouseEnter:Connect(function()
-        TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
-            BackgroundColor3 = Toggle.Value and Color3.fromRGB(0, 182, 255) or Color3.fromRGB(80, 80, 85)
-        }):Play()
-    end)
-    
-    ToggleButton.MouseLeave:Connect(function()
-        TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
-            BackgroundColor3 = Toggle.Value and Color3.fromRGB(0, 162, 255) or Color3.fromRGB(60, 60, 65)
-        }):Play()
-    end)
-    
-    function Toggle:Set(value)
-        if Toggle.Value ~= value then
-            Toggle.Value = value
-            updateToggle()
-            if config.Callback then
-                pcall(config.Callback, Toggle.Value)
-            end
-        end
-    end
-    
-    function Toggle:Get()
-        return Toggle.Value
-    end
-    
-    return Toggle
-end
-        
         if #TabScroll:GetChildren() == 1 then
-            TabButton:Fire("MouseButton1Click")
+            TabButton.BackgroundColor3 = currentTheme.Accent
+            TabFrame.Visible = true
         end
         
         return TabObject
