@@ -22,7 +22,7 @@ local function CreateSound(soundId, volume)
     end
     
     local sound = Instance.new("Sound")
-    sound.Name = "UISound"
+    sound.Name = "rbxassetid://6309164078"
     sound.Parent = workspace
     sound.Volume = volume
     sound.SoundId = soundId
@@ -781,11 +781,11 @@ ScreenGui.Name = "ToggleScriptGUI"
 
 ImageButton.Parent = ScreenGui
 ImageButton.Name = "ScriptToggle"
-ImageButton.Size = UDim2.new(0, 50, 0, 50) -- Smaller size
-ImageButton.Position = UDim2.new(1, -60, 1, -60) -- Bottom right corner
+ImageButton.Size = UDim2.new(0, 50, 0, 50) 
+ImageButton.Position = UDim2.new(1, -60, 1, -60) 
 ImageButton.BackgroundTransparency = 1
-ImageButton.Image = "rbxassetid://3926305904" -- Default gear icon
-ImageButton.ImageColor3 = Color3.new(1, 1, 1) -- White color
+ImageButton.Image = "rbxassetid://3926305904" 
+ImageButton.ImageColor3 = Color3.new(1, 1, 1) 
 
 local scriptEnabled = false
 local partsHidden = false
@@ -816,7 +816,7 @@ local function toggleScript()
     end
     
     local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://131961136"
+    sound.SoundId = "rbxassetid://6309164078"
     sound.Parent = game.Workspace
     sound:Play()
     game:GetService("Debris"):AddItem(sound, 2)
