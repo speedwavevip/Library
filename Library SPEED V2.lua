@@ -63,7 +63,7 @@ end
 
 local Themes = {
     ["Red"] = {
-        Background = Color3.fromRGB(20, 10, 10),
+        Background = Color3.fromRGB(10, 10, 15),
         Surface = Color3.fromRGB(35, 15, 15),
         Card = Color3.fromRGB(50, 20, 20),
         Primary = Color3.fromRGB(220, 50, 50),
@@ -71,7 +71,7 @@ local Themes = {
         Success = Color3.fromRGB(50, 180, 50),
         Warning = Color3.fromRGB(220, 150, 50),
         Error = Color3.fromRGB(220, 50, 50),
-        Text = Color3.fromRGB(255, 255, 255),
+        Text = Color3.fromRGB(255, 0, 0),
         TextSecondary = Color3.fromRGB(200, 160, 160),
         Border = Color3.fromRGB(70, 30, 30)
     }
