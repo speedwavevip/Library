@@ -14,7 +14,6 @@ local StarterGui = game:GetService("StarterGui")
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
 
--- Utility Functions
 local function CreateSound(soundId, volume)
     volume = volume or 0.3
     
@@ -64,7 +63,7 @@ local function CreateRipple(parent, x, y)
     end)
 end
 
--- Color Schemes
+-- Colors يا مطي
 local Themes = {
     ["Modern"] = {
         Background = Color3.fromRGB(15, 15, 20),
@@ -92,6 +91,19 @@ local Themes = {
         TextSecondary = Color3.fromRGB(148, 163, 184),
         Border = Color3.fromRGB(50, 65, 85)
     },
+    ["Royal Red"] = {
+    Background = Color3.fromRGB(20, 10, 10),        
+    Surface = Color3.fromRGB(40, 15, 15),          
+    Card = Color3.fromRGB(60, 20, 20),             
+    Primary = Color3.fromRGB(190, 30, 45),          
+    Secondary = Color3.fromRGB(218, 165, 32),      
+    Success = Color3.fromRGB(50, 168, 82),         
+    Warning = Color3.fromRGB(255, 159, 67),        
+    Error = Color3.fromRGB(220, 53, 69),           
+    Text = Color3.fromRGB(245, 235, 220),          
+    TextSecondary = Color3.fromRGB(180, 160, 140), 
+    Border = Color3.fromRGB(90, 50, 50)             
+}
     ["Sunset"] = {
         Background = Color3.fromRGB(25, 15, 20),
         Surface = Color3.fromRGB(40, 25, 35),
@@ -115,14 +127,12 @@ function ModernUI:CreateWindow(config)
     local enableAnimations = config.Animations ~= false
     local enableSounds = config.Sounds ~= false
     
-    -- Clean up existing UI
     for _, gui in pairs(CoreGui:GetChildren()) do
         if gui.Name == "ModernUILib" then 
             gui:Destroy() 
         end
     end
 
-    -- Create main GUI structure
     local ScreenGui = Instance.new("ScreenGui")
     local BlurFrame = Instance.new("Frame")
     local MainContainer = Instance.new("Frame")
@@ -205,7 +215,7 @@ function ModernUI:CreateWindow(config)
     TitleLabel.TextSize = 18
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     
-    -- Controls frame (smaller)
+    -- Controls frame 
     ControlsFrame.Name = "Controls"
     ControlsFrame.Parent = HeaderFrame
     ControlsFrame.BackgroundTransparency = 1
@@ -220,7 +230,7 @@ function ModernUI:CreateWindow(config)
     MinimizeBtn.Position = UDim2.new(0, 0, 0, 0)
     MinimizeBtn.Size = UDim2.new(0, 30, 1, 0)
     MinimizeBtn.Font = Enum.Font.GothamBold
-    MinimizeBtn.Text = "−"
+    MinimizeBtn.Text = "-"
     MinimizeBtn.TextColor3 = theme.Text
     MinimizeBtn.TextSize = 14
     
@@ -228,7 +238,7 @@ function ModernUI:CreateWindow(config)
     minCorner.CornerRadius = UDim.new(0, 8)
     minCorner.Parent = MinimizeBtn
     
-    -- Close button (smaller)
+    -- Close button 
     CloseBtn.Name = "Close"
     CloseBtn.Parent = ControlsFrame
     CloseBtn.BackgroundColor3 = theme.Error
@@ -244,14 +254,14 @@ function ModernUI:CreateWindow(config)
     closeCorner.CornerRadius = UDim.new(0, 8)
     closeCorner.Parent = CloseBtn
     
-    -- Content frame (adjusted for smaller header)
+    -- Content frame 
     ContentFrame.Name = "Content"
     ContentFrame.Parent = MainContainer
     ContentFrame.BackgroundTransparency = 1
     ContentFrame.Position = UDim2.new(0, 0, 0, 40)
     ContentFrame.Size = UDim2.new(1, 0, 1, -40)
     
-    -- Sidebar (smaller)
+    -- Sidebar 
     SidebarFrame.Name = "Sidebar"
     SidebarFrame.Parent = ContentFrame
     SidebarFrame.BackgroundColor3 = theme.Surface
@@ -278,7 +288,7 @@ function ModernUI:CreateWindow(config)
     tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
     tabLayout.Padding = UDim.new(0, 8)
     
-    -- Main content area (adjusted for smaller sidebar)
+    -- Main content area 
     MainContent.Name = "MainContent"
     MainContent.Parent = ContentFrame
     MainContent.BackgroundColor3 = theme.Surface
@@ -647,11 +657,9 @@ function ModernUI:CreateWindow(config)
             end
         end)
         
-        -- Auto-select first tab
-        if #TabContainer:GetChildren() == 2 then -- 1 is UIListLayout
+        if #TabContainer:GetChildren() == 2 then -
             spawn(function()
                 wait(0.1)
-                -- Manually trigger the first tab selection
                 for _, child in pairs(MainContent:GetChildren()) do
                     if child:IsA("ScrollingFrame") then
                         child.Visible = false
@@ -676,7 +684,6 @@ function ModernUI:CreateWindow(config)
             end)
         end
         
-        -- Tab object
         local TabObject = {}
         
         function TabObject:CreateSection(name)
