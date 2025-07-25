@@ -103,7 +103,7 @@ local Themes = {
     Text = Color3.fromRGB(245, 235, 220),          
     TextSecondary = Color3.fromRGB(180, 160, 140), 
     Border = Color3.fromRGB(90, 50, 50)             
-}
+},
     ["Sunset"] = {
         Background = Color3.fromRGB(25, 15, 20),
         Surface = Color3.fromRGB(40, 25, 35),
