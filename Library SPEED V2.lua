@@ -772,6 +772,109 @@ function ModernUI:CreateWindow(config)
                     end
                 }
             end
+
+            local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Name = "ToggleScriptGUI"
+
+ImageButton.Parent = ScreenGui
+ImageButton.Name = "ScriptToggle"
+ImageButton.Size = UDim2.new(0, 50, 0, 50) -- Smaller size
+ImageButton.Position = UDim2.new(1, -60, 1, -60) -- Bottom right corner
+ImageButton.BackgroundTransparency = 1
+ImageButton.Image = "rbxassetid://3926305904" -- Default gear icon
+ImageButton.ImageColor3 = Color3.new(1, 1, 1) -- White color
+
+local scriptEnabled = false
+local partsHidden = false
+
+local function toggleParts()
+    partsHidden = not partsHidden
+    for _, part in ipairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "Terrain" then
+            part.Transparency = partsHidden and 0.8 or 0
+            if part:FindFirstChildOfClass("Texture") then
+                part.Material = partsHidden and Enum.Material.Glass or Enum.Material.Plastic
+            end
+        end
+    end
+end
+
+local function toggleScript()
+    scriptEnabled = not scriptEnabled
+    
+    if scriptEnabled then
+        
+        ImageButton.ImageColor3 = Color3.new(0, 1, 0) -- Green
+        toggleParts()
+    else
+        
+        ImageButton.ImageColor3 = Color3.new(1, 1, 1) -- White
+        toggleParts()
+    end
+    
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://131961136"
+    sound.Parent = game.Workspace
+    sound:Play()
+    game:GetService("Debris"):AddItem(sound, 2)
+end
+
+ImageButton.MouseButton1Click:Connect(toggleScript)
+
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    ImageButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+ImageButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = ImageButton.Position
+        
+        ImageButton:TweenSize(
+            UDim2.new(0, 55, 0, 55),
+            Enum.EasingDirection.Out,
+            Enum.EasingStyle.Quad,
+            0.1,
+            true
+        )
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+                -- Return to normal size
+                ImageButton:TweenSize(
+                    UDim2.new(0, 50, 0, 50),
+                    Enum.EasingDirection.Out,
+                    Enum.EasingStyle.Quad,
+                    0.1,
+                    true
+                )
+            end
+        end)
+    end
+end)
+
+ImageButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
             
             function SectionObject:CreateToggle(config)
                 config = config or {}
