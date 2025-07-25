@@ -1,6 +1,5 @@
 local ModernUI = {}
 
--- Services
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -10,7 +9,6 @@ local TextService = game:GetService("TextService")
 local CoreGui = game:GetService("CoreGui")
 local StarterGui = game:GetService("StarterGui")
 
--- Variables
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
 
@@ -63,67 +61,26 @@ local function CreateRipple(parent, x, y)
     end)
 end
 
--- Colors يا مطي
 local Themes = {
-    ["Modern"] = {
-        Background = Color3.fromRGB(15, 15, 20),
-        Surface = Color3.fromRGB(25, 25, 35),
-        Card = Color3.fromRGB(35, 35, 50),
-        Primary = Color3.fromRGB(99, 102, 241),
-        Secondary = Color3.fromRGB(168, 85, 247),
-        Success = Color3.fromRGB(34, 197, 94),
-        Warning = Color3.fromRGB(251, 191, 36),
-        Error = Color3.fromRGB(239, 68, 68),
+    ["Red"] = {
+        Background = Color3.fromRGB(20, 10, 10),
+        Surface = Color3.fromRGB(35, 15, 15),
+        Card = Color3.fromRGB(50, 20, 20),
+        Primary = Color3.fromRGB(220, 50, 50),
+        Secondary = Color3.fromRGB(180, 40, 40),
+        Success = Color3.fromRGB(50, 180, 50),
+        Warning = Color3.fromRGB(220, 150, 50),
+        Error = Color3.fromRGB(220, 50, 50),
         Text = Color3.fromRGB(255, 255, 255),
-        TextSecondary = Color3.fromRGB(156, 163, 175),
-        Border = Color3.fromRGB(55, 55, 75)
-    },
-    ["Ocean"] = {
-        Background = Color3.fromRGB(10, 25, 40),
-        Surface = Color3.fromRGB(20, 35, 55),
-        Card = Color3.fromRGB(30, 45, 70),
-        Primary = Color3.fromRGB(59, 130, 246),
-        Secondary = Color3.fromRGB(14, 165, 233),
-        Success = Color3.fromRGB(16, 185, 129),
-        Warning = Color3.fromRGB(245, 158, 11),
-        Error = Color3.fromRGB(220, 38, 127),
-        Text = Color3.fromRGB(248, 250, 252),
-        TextSecondary = Color3.fromRGB(148, 163, 184),
-        Border = Color3.fromRGB(50, 65, 85)
-    },
-    ["RoyalRed"] = {
-    Background = Color3.fromRGB(20, 10, 10),        
-    Surface = Color3.fromRGB(40, 15, 15),          
-    Card = Color3.fromRGB(60, 20, 20),             
-    Primary = Color3.fromRGB(190, 30, 45),          
-    Secondary = Color3.fromRGB(218, 165, 32),      
-    Success = Color3.fromRGB(50, 168, 82),         
-    Warning = Color3.fromRGB(255, 159, 67),        
-    Error = Color3.fromRGB(220, 53, 69),           
-    Text = Color3.fromRGB(245, 235, 220),          
-    TextSecondary = Color3.fromRGB(180, 160, 140), 
-    Border = Color3.fromRGB(90, 50, 50)             
-},
-    ["Sunset"] = {
-        Background = Color3.fromRGB(25, 15, 20),
-        Surface = Color3.fromRGB(40, 25, 35),
-        Card = Color3.fromRGB(55, 35, 50),
-        Primary = Color3.fromRGB(251, 113, 133),
-        Secondary = Color3.fromRGB(249, 115, 22),
-        Success = Color3.fromRGB(132, 204, 22),
-        Warning = Color3.fromRGB(234, 179, 8),
-        Error = Color3.fromRGB(239, 68, 68),
-        Text = Color3.fromRGB(254, 242, 242),
-        TextSecondary = Color3.fromRGB(203, 166, 247),
-        Border = Color3.fromRGB(75, 55, 70)
+        TextSecondary = Color3.fromRGB(200, 160, 160),
+        Border = Color3.fromRGB(70, 30, 30)
     }
 }
 
--- Main Library
 function ModernUI:CreateWindow(config)
     config = config or {}
     local windowTitle = config.Title or "Modern UI"
-    local theme = Themes[config.Theme or "Modern"]
+    local theme = Themes[config.Theme or "Red"]
     local enableAnimations = config.Animations ~= false
     local enableSounds = config.Sounds ~= false
     
@@ -147,13 +104,11 @@ function ModernUI:CreateWindow(config)
     local TabContainer = Instance.new("ScrollingFrame")
     local MainContent = Instance.new("Frame")
     
-    -- Setup ScreenGui
     ScreenGui.Name = "ModernUILib"
     ScreenGui.Parent = CoreGui
     ScreenGui.ResetOnSpawn = false
     ScreenGui.IgnoreGuiInset = true
     
-    -- Blur background
     BlurFrame.Name = "BlurFrame"
     BlurFrame.Parent = ScreenGui
     BlurFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -161,7 +116,6 @@ function ModernUI:CreateWindow(config)
     BlurFrame.Size = UDim2.new(1, 0, 1, 0)
     BlurFrame.Visible = false
     
-    -- Shadow frame for depth (smaller)
     ShadowFrame.Name = "Shadow"
     ShadowFrame.Parent = ScreenGui
     ShadowFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -173,7 +127,6 @@ function ModernUI:CreateWindow(config)
     shadowCorner.CornerRadius = UDim.new(0, 20)
     shadowCorner.Parent = ShadowFrame
     
-    -- Main container (smaller size)
     MainContainer.Name = "MainContainer"
     MainContainer.Parent = ScreenGui
     MainContainer.BackgroundColor3 = theme.Background
@@ -192,7 +145,6 @@ function ModernUI:CreateWindow(config)
     mainStroke.Thickness = 1
     mainStroke.Parent = MainContainer
     
-    -- Header (smaller)
     HeaderFrame.Name = "Header"
     HeaderFrame.Parent = MainContainer
     HeaderFrame.BackgroundColor3 = theme.Surface
@@ -203,7 +155,6 @@ function ModernUI:CreateWindow(config)
     headerCorner.CornerRadius = UDim.new(0, 16)
     headerCorner.Parent = HeaderFrame
     
-    -- Title
     TitleLabel.Name = "Title"
     TitleLabel.Parent = HeaderFrame
     TitleLabel.BackgroundTransparency = 1
@@ -215,14 +166,12 @@ function ModernUI:CreateWindow(config)
     TitleLabel.TextSize = 18
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     
-    -- Controls frame 
     ControlsFrame.Name = "Controls"
     ControlsFrame.Parent = HeaderFrame
     ControlsFrame.BackgroundTransparency = 1
     ControlsFrame.Position = UDim2.new(1, -80, 0, 5)
     ControlsFrame.Size = UDim2.new(0, 70, 0, 30)
     
-    -- Minimize button (smaller)
     MinimizeBtn.Name = "Minimize"
     MinimizeBtn.Parent = ControlsFrame
     MinimizeBtn.BackgroundColor3 = theme.Card
@@ -230,7 +179,7 @@ function ModernUI:CreateWindow(config)
     MinimizeBtn.Position = UDim2.new(0, 0, 0, 0)
     MinimizeBtn.Size = UDim2.new(0, 30, 1, 0)
     MinimizeBtn.Font = Enum.Font.GothamBold
-    MinimizeBtn.Text = "-"
+    MinimizeBtn.Text = "−"
     MinimizeBtn.TextColor3 = theme.Text
     MinimizeBtn.TextSize = 14
     
@@ -238,7 +187,6 @@ function ModernUI:CreateWindow(config)
     minCorner.CornerRadius = UDim.new(0, 8)
     minCorner.Parent = MinimizeBtn
     
-    -- Close button 
     CloseBtn.Name = "Close"
     CloseBtn.Parent = ControlsFrame
     CloseBtn.BackgroundColor3 = theme.Error
@@ -254,14 +202,12 @@ function ModernUI:CreateWindow(config)
     closeCorner.CornerRadius = UDim.new(0, 8)
     closeCorner.Parent = CloseBtn
     
-    -- Content frame 
     ContentFrame.Name = "Content"
     ContentFrame.Parent = MainContainer
     ContentFrame.BackgroundTransparency = 1
     ContentFrame.Position = UDim2.new(0, 0, 0, 40)
     ContentFrame.Size = UDim2.new(1, 0, 1, -40)
     
-    -- Sidebar 
     SidebarFrame.Name = "Sidebar"
     SidebarFrame.Parent = ContentFrame
     SidebarFrame.BackgroundColor3 = theme.Surface
@@ -273,7 +219,6 @@ function ModernUI:CreateWindow(config)
     sidebarCorner.CornerRadius = UDim.new(0, 12)
     sidebarCorner.Parent = SidebarFrame
     
-    -- Tab container
     TabContainer.Name = "TabContainer"
     TabContainer.Parent = SidebarFrame
     TabContainer.BackgroundTransparency = 1
@@ -288,7 +233,6 @@ function ModernUI:CreateWindow(config)
     tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
     tabLayout.Padding = UDim.new(0, 8)
     
-    -- Main content area 
     MainContent.Name = "MainContent"
     MainContent.Parent = ContentFrame
     MainContent.BackgroundColor3 = theme.Surface
@@ -300,12 +244,10 @@ function ModernUI:CreateWindow(config)
     contentCorner.CornerRadius = UDim.new(0, 12)
     contentCorner.Parent = MainContent
     
-    -- Window functionality
     local dragStart, startPos
     local isMinimized = false
     local currentTab = nil
     
-    -- Dragging
     HeaderFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragStart = input.Position
@@ -340,7 +282,6 @@ function ModernUI:CreateWindow(config)
         end
     end)
     
-    -- Minimize functionality
     MinimizeBtn.MouseButton1Click:Connect(function()
         if enableSounds then
             CreateSound("rbxassetid://131961136", 0.2)
@@ -365,7 +306,6 @@ function ModernUI:CreateWindow(config)
         MinimizeBtn.Text = isMinimized and "□" or "−"
     end)
     
-    -- Close functionality
     CloseBtn.MouseButton1Click:Connect(function()
         if enableSounds then
             CreateSound("rbxassetid://131961136", 0.3)
@@ -390,7 +330,6 @@ function ModernUI:CreateWindow(config)
         end
     end)
     
-    -- Button hover effects
     for _, button in pairs({MinimizeBtn, CloseBtn}) do
         button.MouseEnter:Connect(function()
             if enableAnimations then
@@ -409,12 +348,10 @@ function ModernUI:CreateWindow(config)
         end)
     end
     
-    -- Window object
     local WindowObject = {}
     WindowObject.Theme = theme
     WindowObject.Notifications = {}
     
-    -- Notification system
     function WindowObject:Notify(config)
         config = config or {}
         local title = config.Title or "Notification"
@@ -430,7 +367,6 @@ function ModernUI:CreateWindow(config)
         })
     end
     
-    -- Key system
     function WindowObject:CreateKeySystem(config)
         config = config or {}
         local correctKey = config.Key or "defaultkey"
@@ -543,7 +479,6 @@ function ModernUI:CreateWindow(config)
         end)
     end
     
-    -- Tab creation
     function WindowObject:CreateTab(config)
         config = config or {}
         local tabName = config.Name or "Tab"
@@ -556,7 +491,6 @@ function ModernUI:CreateWindow(config)
         local TabContent = Instance.new("ScrollingFrame")
         local ContentLayout = Instance.new("UIListLayout")
         
-        -- Tab button (smaller)
         TabButton.Name = tabName
         TabButton.Parent = TabContainer
         TabButton.BackgroundColor3 = theme.Card
@@ -586,7 +520,6 @@ function ModernUI:CreateWindow(config)
         TabLabel.TextSize = 12
         TabLabel.TextXAlignment = Enum.TextXAlignment.Left
         
-        -- Tab content (smaller padding)
         TabContent.Name = tabName.."Content"
         TabContent.Parent = MainContent
         TabContent.BackgroundTransparency = 1
@@ -601,7 +534,6 @@ function ModernUI:CreateWindow(config)
         ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
         ContentLayout.Padding = UDim.new(0, 8)
         
-        -- Tab selection
         TabButton.MouseButton1Click:Connect(function()
             if enableSounds then
                 CreateSound("rbxassetid://131961136", 0.1)
@@ -632,7 +564,6 @@ function ModernUI:CreateWindow(config)
             currentTab = TabContent
         end)
         
-        -- Tab hover effect
         TabButton.MouseEnter:Connect(function()
             if TabButton.BackgroundColor3 ~= theme.Primary then
                 if enableAnimations then
@@ -657,7 +588,7 @@ function ModernUI:CreateWindow(config)
             end
         end)
         
-        if #TabContainer:GetChildren() == 2 then -
+        if #TabContainer:GetChildren() == 2 then
             spawn(function()
                 wait(0.1)
                 for _, child in pairs(MainContent:GetChildren()) do
