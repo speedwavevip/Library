@@ -14,7 +14,8 @@ local StarterGui = game:GetService("StarterGui")
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
 
- function CreateSound(soundId, volume)
+-- Utility Functions
+local function CreateSound(soundId, volume)
     volume = volume or 0.3
     
     for _, sound in pairs(workspace:GetChildren()) do
@@ -63,7 +64,7 @@ local function CreateRipple(parent, x, y)
     end)
 end
 
--- Colors
+-- Color Schemes
 local Themes = {
     ["Modern"] = {
         Background = Color3.fromRGB(15, 15, 20),
@@ -150,25 +151,25 @@ function ModernUI:CreateWindow(config)
     BlurFrame.Size = UDim2.new(1, 0, 1, 0)
     BlurFrame.Visible = false
     
-    -- Shadow frame for depth
+    -- Shadow frame for depth (smaller)
     ShadowFrame.Name = "Shadow"
     ShadowFrame.Parent = ScreenGui
     ShadowFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     ShadowFrame.BackgroundTransparency = 0.8
-    ShadowFrame.Position = UDim2.new(0.5, -403, 0.5, -253)
-    ShadowFrame.Size = UDim2.new(0, 806, 0, 506)
+    ShadowFrame.Position = UDim2.new(0.5, -303, 0.5, -203)
+    ShadowFrame.Size = UDim2.new(0, 606, 0, 406)
     
     local shadowCorner = Instance.new("UICorner")
     shadowCorner.CornerRadius = UDim.new(0, 20)
     shadowCorner.Parent = ShadowFrame
     
-    -- Main container
+    -- Main container (smaller size)
     MainContainer.Name = "MainContainer"
     MainContainer.Parent = ScreenGui
     MainContainer.BackgroundColor3 = theme.Background
     MainContainer.BorderSizePixel = 0
-    MainContainer.Position = UDim2.new(0.5, -400, 0.5, -250)
-    MainContainer.Size = UDim2.new(0, 800, 0, 500)
+    MainContainer.Position = UDim2.new(0.5, -300, 0.5, -200)
+    MainContainer.Size = UDim2.new(0, 600, 0, 400)
     MainContainer.ClipsDescendants = true
     MainContainer.Active = true
     
@@ -181,12 +182,12 @@ function ModernUI:CreateWindow(config)
     mainStroke.Thickness = 1
     mainStroke.Parent = MainContainer
     
-    -- Header
+    -- Header (smaller)
     HeaderFrame.Name = "Header"
     HeaderFrame.Parent = MainContainer
     HeaderFrame.BackgroundColor3 = theme.Surface
     HeaderFrame.BorderSizePixel = 0
-    HeaderFrame.Size = UDim2.new(1, 0, 0, 50)
+    HeaderFrame.Size = UDim2.new(1, 0, 0, 40)
     
     local headerCorner = Instance.new("UICorner")
     headerCorner.CornerRadius = UDim.new(0, 16)
@@ -204,59 +205,59 @@ function ModernUI:CreateWindow(config)
     TitleLabel.TextSize = 18
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     
-    -- Controls frame
+    -- Controls frame (smaller)
     ControlsFrame.Name = "Controls"
     ControlsFrame.Parent = HeaderFrame
     ControlsFrame.BackgroundTransparency = 1
-    ControlsFrame.Position = UDim2.new(1, -100, 0, 10)
-    ControlsFrame.Size = UDim2.new(0, 90, 0, 30)
+    ControlsFrame.Position = UDim2.new(1, -80, 0, 5)
+    ControlsFrame.Size = UDim2.new(0, 70, 0, 30)
     
-    -- Minimize button
+    -- Minimize button (smaller)
     MinimizeBtn.Name = "Minimize"
     MinimizeBtn.Parent = ControlsFrame
     MinimizeBtn.BackgroundColor3 = theme.Card
     MinimizeBtn.BorderSizePixel = 0
     MinimizeBtn.Position = UDim2.new(0, 0, 0, 0)
-    MinimizeBtn.Size = UDim2.new(0, 40, 1, 0)
+    MinimizeBtn.Size = UDim2.new(0, 30, 1, 0)
     MinimizeBtn.Font = Enum.Font.GothamBold
     MinimizeBtn.Text = "−"
     MinimizeBtn.TextColor3 = theme.Text
-    MinimizeBtn.TextSize = 16
+    MinimizeBtn.TextSize = 14
     
     local minCorner = Instance.new("UICorner")
     minCorner.CornerRadius = UDim.new(0, 8)
     minCorner.Parent = MinimizeBtn
     
-    -- Close button
+    -- Close button (smaller)
     CloseBtn.Name = "Close"
     CloseBtn.Parent = ControlsFrame
     CloseBtn.BackgroundColor3 = theme.Error
     CloseBtn.BorderSizePixel = 0
-    CloseBtn.Position = UDim2.new(0, 50, 0, 0)
-    CloseBtn.Size = UDim2.new(0, 40, 1, 0)
+    CloseBtn.Position = UDim2.new(0, 40, 0, 0)
+    CloseBtn.Size = UDim2.new(0, 30, 1, 0)
     CloseBtn.Font = Enum.Font.GothamBold
     CloseBtn.Text = "×"
     CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CloseBtn.TextSize = 18
+    CloseBtn.TextSize = 16
     
     local closeCorner = Instance.new("UICorner")
     closeCorner.CornerRadius = UDim.new(0, 8)
     closeCorner.Parent = CloseBtn
     
-    -- Content frame
+    -- Content frame (adjusted for smaller header)
     ContentFrame.Name = "Content"
     ContentFrame.Parent = MainContainer
     ContentFrame.BackgroundTransparency = 1
-    ContentFrame.Position = UDim2.new(0, 0, 0, 50)
-    ContentFrame.Size = UDim2.new(1, 0, 1, -50)
+    ContentFrame.Position = UDim2.new(0, 0, 0, 40)
+    ContentFrame.Size = UDim2.new(1, 0, 1, -40)
     
-    -- Sidebar
+    -- Sidebar (smaller)
     SidebarFrame.Name = "Sidebar"
     SidebarFrame.Parent = ContentFrame
     SidebarFrame.BackgroundColor3 = theme.Surface
     SidebarFrame.BorderSizePixel = 0
-    SidebarFrame.Position = UDim2.new(0, 10, 0, 10)
-    SidebarFrame.Size = UDim2.new(0, 200, 1, -20)
+    SidebarFrame.Position = UDim2.new(0, 8, 0, 8)
+    SidebarFrame.Size = UDim2.new(0, 160, 1, -16)
     
     local sidebarCorner = Instance.new("UICorner")
     sidebarCorner.CornerRadius = UDim.new(0, 12)
@@ -277,13 +278,13 @@ function ModernUI:CreateWindow(config)
     tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
     tabLayout.Padding = UDim.new(0, 8)
     
-    -- Main content area
+    -- Main content area (adjusted for smaller sidebar)
     MainContent.Name = "MainContent"
     MainContent.Parent = ContentFrame
     MainContent.BackgroundColor3 = theme.Surface
     MainContent.BorderSizePixel = 0
-    MainContent.Position = UDim2.new(0, 220, 0, 10)
-    MainContent.Size = UDim2.new(1, -230, 1, -20)
+    MainContent.Position = UDim2.new(0, 176, 0, 8)
+    MainContent.Size = UDim2.new(1, -184, 1, -16)
     
     local contentCorner = Instance.new("UICorner")
     contentCorner.CornerRadius = UDim.new(0, 12)
@@ -336,8 +337,8 @@ function ModernUI:CreateWindow(config)
         end
         
         isMinimized = not isMinimized
-        local targetSize = isMinimized and UDim2.new(0, 800, 0, 50) or UDim2.new(0, 800, 0, 500)
-        local shadowSize = isMinimized and UDim2.new(0, 806, 0, 56) or UDim2.new(0, 806, 0, 506)
+        local targetSize = isMinimized and UDim2.new(0, 600, 0, 40) or UDim2.new(0, 600, 0, 400)
+        local shadowSize = isMinimized and UDim2.new(0, 606, 0, 46) or UDim2.new(0, 606, 0, 406)
         
         if enableAnimations then
             TweenService:Create(MainContainer, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {
@@ -514,7 +515,20 @@ function ModernUI:CreateWindow(config)
         
         KeyInput.FocusLost:Connect(function(enterPressed)
             if enterPressed then
-                SubmitBtn.MouseButton1Click:Fire()
+                local connection = SubmitBtn.MouseButton1Click:Connect(function() end)
+                connection:Disconnect()
+                if KeyInput.Text == correctKey then
+                    BlurFrame.Visible = false
+                    KeyFrame:Destroy()
+                    callback(true)
+                else
+                    callback(false)
+                    WindowObject:Notify({
+                        Title = "Access Denied",
+                        Content = "Invalid key entered",
+                        Type = "Error"
+                    })
+                end
             end
         end)
     end
@@ -532,11 +546,11 @@ function ModernUI:CreateWindow(config)
         local TabContent = Instance.new("ScrollingFrame")
         local ContentLayout = Instance.new("UIListLayout")
         
-        -- Tab button
+        -- Tab button (smaller)
         TabButton.Name = tabName
         TabButton.Parent = TabContainer
         TabButton.BackgroundColor3 = theme.Card
-        TabButton.Size = UDim2.new(1, 0, 0, 45)
+        TabButton.Size = UDim2.new(1, 0, 0, 35)
         TabButton.Text = ""
         TabButton.BorderSizePixel = 0
         
@@ -546,36 +560,36 @@ function ModernUI:CreateWindow(config)
         TabIcon.Name = "Icon"
         TabIcon.Parent = TabButton
         TabIcon.BackgroundTransparency = 1
-        TabIcon.Position = UDim2.new(0, 12, 0.5, -10)
-        TabIcon.Size = UDim2.new(0, 20, 0, 20)
+        TabIcon.Position = UDim2.new(0, 8, 0.5, -8)
+        TabIcon.Size = UDim2.new(0, 16, 0, 16)
         TabIcon.Image = tabIcon
         TabIcon.ImageColor3 = theme.TextSecondary
         
         TabLabel.Name = "Label"
         TabLabel.Parent = TabButton
         TabLabel.BackgroundTransparency = 1
-        TabLabel.Position = UDim2.new(0, 40, 0, 0)
-        TabLabel.Size = UDim2.new(1, -50, 1, 0)
+        TabLabel.Position = UDim2.new(0, 30, 0, 0)
+        TabLabel.Size = UDim2.new(1, -35, 1, 0)
         TabLabel.Font = Enum.Font.GothamSemibold
         TabLabel.Text = tabName
         TabLabel.TextColor3 = theme.TextSecondary
-        TabLabel.TextSize = 14
+        TabLabel.TextSize = 12
         TabLabel.TextXAlignment = Enum.TextXAlignment.Left
         
-        -- Tab content
+        -- Tab content (smaller padding)
         TabContent.Name = tabName.."Content"
         TabContent.Parent = MainContent
         TabContent.BackgroundTransparency = 1
-        TabContent.Position = UDim2.new(0, 15, 0, 15)
-        TabContent.Size = UDim2.new(1, -30, 1, -30)
-        TabContent.ScrollBarThickness = 3
+        TabContent.Position = UDim2.new(0, 10, 0, 10)
+        TabContent.Size = UDim2.new(1, -20, 1, -20)
+        TabContent.ScrollBarThickness = 2
         TabContent.ScrollBarImageColor3 = theme.Primary
         TabContent.BorderSizePixel = 0
         TabContent.Visible = false
         
         ContentLayout.Parent = TabContent
         ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        ContentLayout.Padding = UDim.new(0, 12)
+        ContentLayout.Padding = UDim.new(0, 8)
         
         -- Tab selection
         TabButton.MouseButton1Click:Connect(function()
@@ -635,7 +649,31 @@ function ModernUI:CreateWindow(config)
         
         -- Auto-select first tab
         if #TabContainer:GetChildren() == 2 then -- 1 is UIListLayout
-            TabButton.MouseButton1Click:Fire()
+            spawn(function()
+                wait(0.1)
+                -- Manually trigger the first tab selection
+                for _, child in pairs(MainContent:GetChildren()) do
+                    if child:IsA("ScrollingFrame") then
+                        child.Visible = false
+                    end
+                end
+                
+                for _, child in pairs(TabContainer:GetChildren()) do
+                    if child:IsA("TextButton") then
+                        child.BackgroundColor3 = theme.Card
+                        local icon = child:FindFirstChild("Icon")
+                        local label = child:FindFirstChild("Label")
+                        if icon then icon.ImageColor3 = theme.TextSecondary end
+                        if label then label.TextColor3 = theme.TextSecondary end
+                    end
+                end
+                
+                TabContent.Visible = true
+                TabButton.BackgroundColor3 = theme.Primary
+                TabIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+                TabLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                currentTab = TabContent
+            end)
         end
         
         -- Tab object
