@@ -691,86 +691,105 @@ function ModernUI:CreateWindow(config)
             end
             
             function SectionObject:CreateButton(config)
-                config = config or {}
-                local text = config.Text or "Button"
-                local callback = config.Callback or function() end
-                
-                local Button = Instance.new("TextButton")
-                local ButtonCorner = Instance.new("UICorner")
-                local ButtonStroke = Instance.new("UIStroke")
-                
-                Button.Name = "Button"
-                Button.Parent = SectionContent
-                Button.BackgroundColor3 = theme.Primary
-                Button.Size = UDim2.new(1, 0, 0, 35)
-                Button.Font = Enum.Font.GothamSemibold
-                Button.Text = text
-                Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-                Button.TextSize = 14
-                Button.BorderSizePixel = 0
-                Button.AutoButtonColor = false
-                
-                ButtonCorner.CornerRadius = UDim.new(0, 8)
-                ButtonCorner.Parent = Button
-                
-                ButtonStroke.Color = theme.Primary
-                ButtonStroke.Thickness = 1
-                ButtonStroke.Transparency = 0.5
-                ButtonStroke.Parent = Button
-                
-                Button.MouseEnter:Connect(function()
-                    if enableAnimations then
-                        TweenService:Create(Button, TweenInfo.new(0.15), {
-                            BackgroundColor3 = Color3.fromRGB(
-                                math.min(255, theme.Primary.R * 255 + 20),
-                                math.min(255, theme.Primary.G * 255 + 20),
-                                math.min(255, theme.Primary.B * 255 + 20)
-                            )
-                        }):Play()
-                    end
-                end)
-                
-                Button.MouseLeave:Connect(function()
-                    if enableAnimations then
-                        TweenService:Create(Button, TweenInfo.new(0.15), {
-                            BackgroundColor3 = theme.Primary
-                        }):Play()
-                    end
-                end)
-                
-                Button.MouseButton1Click:Connect(function()
-                    if enableSounds then
-                        CreateSound("rbxassetid://6309164078", 0.2)
-                    end
-                    
-                    CreateRipple(Button, Mouse.X - Button.AbsolutePosition.X, Mouse.Y - Button.AbsolutePosition.Y)
-                    
-                    if enableAnimations then
-                        local clickTween = TweenService:Create(Button, TweenInfo.new(0.1), {
-                            Size = UDim2.new(1, -4, 0, 33)
-                        })
-                        clickTween:Play()
-                        clickTween.Completed:Connect(function()
-                            TweenService:Create(Button, TweenInfo.new(0.1), {
-                                Size = UDim2.new(1, 0, 0, 35)
-                            }):Play()
-                        end)
-                    end
-                    
-                    pcall(callback)
-                end)
-                
-                updateSectionSize()
-                
-                return {
-                    SetText = function(newText)
-                        Button.Text = newText or ""
-                    end,
-                    SetCallback = function(newCallback)
-                        callback = newCallback or function() end
-                    end
-                }
-            end            
+    config = config or {}
+    local text = config.Text or "Button"
+    local callback = config.Callback or function() end
+    local Button = Instance.new("TextButton")
+    local ButtonCorner = Instance.new("UICorner")
+    local ButtonStroke = Instance.new("UIStroke")
+    
+    Button.Name = "Button"
+    Button.Parent = SectionContent
+    Button.BackgroundColor3 = theme.Primary or Color3.fromRGB(100, 100, 255) 
+    Button.Size = UDim2.new(1, -10, 0, 35)
+    Button.Position = UDim2.new(0, 5, 0, 0) 
+    Button.Font = Enum.Font.GothamSemibold or Enum.Font.Gotham 
+    Button.Text = text
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextSize = 14
+    Button.BorderSizePixel = 0
+    Button.AutoButtonColor = false
+    Button.Visible = true
+    Button.ZIndex = 1 
+    
+    ButtonCorner.CornerRadius = UDim.new(0, 8)
+    ButtonCorner.Parent = Button
+    
+    ButtonStroke.Color = theme.Primary or Color3.fromRGB(100, 100, 255)
+    ButtonStroke.Thickness = 1
+    ButtonStroke.Transparency = 0.5
+    ButtonStroke.Parent = Button
+    
+    if not SectionContent:FindFirstChild("UIListLayout") then
+        local layout = Instance.new("UIListLayout")
+        layout.Parent = SectionContent
+        layout.SortOrder = Enum.SortOrder.LayoutOrder
+        layout.Padding = UDim.new(0, 5)
+    end
+    
+    Button.MouseEnter:Connect(function()
+        if enableAnimations then
+            local primaryColor = theme.Primary or Color3.fromRGB(100, 100, 255)
+            TweenService:Create(Button, TweenInfo.new(0.15), {
+                BackgroundColor3 = Color3.fromRGB(
+                    math.min(255, primaryColor.R * 255 + 20),
+                    math.min(255, primaryColor.G * 255 + 20),
+                    math.min(255, primaryColor.B * 255 + 20)
+                )
+            }):Play()
+        end
+    end)
+    
+    Button.MouseLeave:Connect(function()
+        if enableAnimations then
+            TweenService:Create(Button, TweenInfo.new(0.15), {
+                BackgroundColor3 = theme.Primary or Color3.fromRGB(100, 100, 255)
+            }):Play()
+        end
+    end)
+    
+    Button.MouseButton1Click:Connect(function()
+        if enableSounds and CreateSound then
+            CreateSound("rbxassetid://6309164078", 0.2)
+        end
+        
+        if CreateRipple and Mouse then
+            CreateRipple(Button, Mouse.X - Button.AbsolutePosition.X, Mouse.Y - Button.AbsolutePosition.Y)
+        end
+        
+        if enableAnimations then
+            local clickTween = TweenService:Create(Button, TweenInfo.new(0.1), {
+                Size = UDim2.new(1, -14, 0, 33)
+            })
+            clickTween:Play()
+            clickTween.Completed:Connect(function()
+                TweenService:Create(Button, TweenInfo.new(0.1), {
+                    Size = UDim2.new(1, -10, 0, 35)
+                }):Play()
+            end)
+        end
+        
+        pcall(callback)
+    end)
+    
+    if updateSectionSize then
+        updateSectionSize()
+    end
+    
+    return {
+        Button = Button, 
+        SetText = function(newText)
+            Button.Text = newText or ""
+        end,
+        SetCallback = function(newCallback)
+            callback = newCallback or function() end
+        end,
+        SetVisible = function(visible)
+            Button.Visible = visible
+        end
+    }
+            
+end   
             
             function SectionObject:CreateToggle(config)
                 config = config or {}
