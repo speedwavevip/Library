@@ -676,9 +676,6 @@ function ModernUI:CreateWindow(config)
                 }
             end
 
-            local TweenService = game:GetService("TweenService")
-
--- Discord Button
 local Discord = Instance.new("TextButton")
 Discord.Name = "Discord"
 Discord.Parent = Body
@@ -759,7 +756,6 @@ Discord.MouseButton1Click:Connect(function()
         end
     end)
     
-    -- Show notification
     if success then
         game:GetService("StarterGui"):SetCore("SendNotification", {
             Title = "Discord",
