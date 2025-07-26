@@ -680,15 +680,11 @@ local Discord = Instance.new("TextButton")
 Discord.Name = "Discord"
 Discord.Parent = Body
 Discord.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-Discord.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Discord.BorderSizePixel = 0
 Discord.Position = UDim2.new(0, 5, 0, 320)
 Discord.Size = UDim2.new(0, 85, 0, 25)
 Discord.AutoButtonColor = false
-Discord.Font = Enum.Font.SourceSans
 Discord.Text = ""
-Discord.TextColor3 = Color3.fromRGB(0, 0, 0)
-Discord.TextSize = 14.000
 
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 5)
@@ -697,88 +693,83 @@ UICorner.Parent = Discord
 local Disc_Logo = Instance.new("ImageLabel")
 Disc_Logo.Name = "Disc_Logo"
 Disc_Logo.Parent = Discord
-Disc_Logo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Disc_Logo.BackgroundTransparency = 1.000
-Disc_Logo.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Disc_Logo.BorderSizePixel = 0
-Disc_Logo.Position = UDim2.new(0, 5, 0, 1)
-Disc_Logo.Size = UDim2.new(0, 23, 0, 23)
+Disc_Logo.BackgroundTransparency = 1
+Disc_Logo.Position = UDim2.new(0, 5, 0.5, -10)
+Disc_Logo.Size = UDim2.new(0, 20, 0, 20)
 Disc_Logo.Image = "http://www.roblox.com/asset/?id=12058969086"
 
 local Disc_Title = Instance.new("TextLabel")
 Disc_Title.Name = "Disc_Title"
 Disc_Title.Parent = Discord
-Disc_Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Disc_Title.BackgroundTransparency = 1.000
-Disc_Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Disc_Title.BorderSizePixel = 0
-Disc_Title.Position = UDim2.new(0, 35, 0, 0)
-Disc_Title.Size = UDim2.new(0, 40, 0, 25)
+Disc_Title.BackgroundTransparency = 1
+Disc_Title.Position = UDim2.new(0, 30, 0, 0)
+Disc_Title.Size = UDim2.new(0, 50, 1, 0)
 Disc_Title.Font = Enum.Font.SourceSansSemibold
 Disc_Title.Text = "Discord"
 Disc_Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Disc_Title.TextSize = 14.000
+Disc_Title.TextSize = 14
 Disc_Title.TextXAlignment = Enum.TextXAlignment.Left
 
 Discord.MouseEnter:Connect(function()
-    TweenService:Create(Discord, TweenInfo.new(0.15), {
+    local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quad)
+    
+    TweenService:Create(Discord, tweenInfo, {
         BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     }):Play()
-    TweenService:Create(Disc_Logo, TweenInfo.new(0.15), {
+    
+    TweenService:Create(Disc_Logo, tweenInfo, {
         ImageTransparency = 0.7
     }):Play()
-    TweenService:Create(Disc_Title, TweenInfo.new(0.15), {
+    
+    TweenService:Create(Disc_Title, tweenInfo, {
         TextTransparency = 0.7
     }):Play()
 end)
 
 Discord.MouseLeave:Connect(function()
-    TweenService:Create(Discord, TweenInfo.new(0.15), {
+    local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quad)
+    
+    TweenService:Create(Discord, tweenInfo, {
         BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     }):Play()
-    TweenService:Create(Disc_Logo, TweenInfo.new(0.15), {
+    
+    TweenService:Create(Disc_Logo, tweenInfo, {
         ImageTransparency = 0
     }):Play()
-    TweenService:Create(Disc_Title, TweenInfo.new(0.15), {
+    
+    TweenService:Create(Disc_Title, tweenInfo, {
         TextTransparency = 0
     }):Play()
 end)
 
 Discord.MouseButton1Click:Connect(function()
-    
-    local success, err = pcall(function()
+    pcall(function()
         if setclipboard then
             setclipboard("https://discord.gg/BDbaRyaFTT")
         elseif toclipboard then
             toclipboard("https://discord.gg/BDbaRyaFTT")
-        else
-            error("No clipboard function available")
         end
     end)
     
-    if success then
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Discord",
-            Text = "Discord link copied to clipboard",
-            Button1 = "Okay",
-            Duration = 5
-        })
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Discord",
+        Text = "Discord link copied to clipboard",
+        Duration = 5
+    })
 end)
 
 local Server_Time = Instance.new("TextLabel")
 Server_Time.Name = "Server_Time"
 Server_Time.Parent = Body
-Server_Time.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Server_Time.BackgroundTransparency = 1.000
-Server_Time.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Server_Time.BorderSizePixel = 0
+Server_Time.BackgroundTransparency = 1
 Server_Time.Position = UDim2.new(0, 100, 0, 320)
-Server_Time.Size = UDim2.new(0, 120, 0, 25)
+Server_Time.Size = UDim2.new(0, 150, 0, 25)
 Server_Time.Font = Enum.Font.SourceSansSemibold
-Server_Time.Text = "Loading time..."
+Server_Time.Text = "00:00:00"
 Server_Time.TextColor3 = Color3.fromRGB(255, 255, 255)
-Server_Time.TextSize = 14.000
+Server_Time.TextSize = 14
 Server_Time.TextXAlignment = Enum.TextXAlignment.Left
+
 
 local function UpdateTime()
     local GameTime = math.floor(workspace.DistributedGameTime + 0.5)
@@ -790,7 +781,7 @@ end
 
 game:GetService('RunService').Heartbeat:Connect(UpdateTime)
 
-
+            
             function SectionObject:CreateButton(config)
                 config = config or {}
                 local text = config.Text or "Button"
